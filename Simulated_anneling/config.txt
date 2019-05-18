@@ -46,13 +46,13 @@ m 1763 1000 0
 m 1792 1000 0
 
 # Numero de vizinhos
-v 20
+v 30
 
 #Numero de iterções
-i 5
+i 10
 
 # Temperatura inicial do SA
-s 500.0
+s 900.0
 
 # Temperatura final do SA
 f 10.0
@@ -62,6 +62,18 @@ a 0.9
 
 # Numero de perturbacoes na busca local em vizinhanca do SA
 p 1
+
+# Numero de reaquecimentos
+r 3
+
+# Busca de vizinhança b x1 = busca, x2 = modo de pertubação, x1=['u','i'], x2=['r','i','c'], x1-u busca uniforme, x1-i busca proporcional ao ID, x2-r pert random
+# x2-i pert incremental, x2-c pert relacional ao delay atual.
+#b u r # uniforme random
+#b u i # uniforme incremetal
+#b u c # uniforme ciclo
+#b i r # id random
+b i i  # id incremetal
+#b i c # id ciclo
 
 # Marcador de fim de arquivo de configuracao
 e

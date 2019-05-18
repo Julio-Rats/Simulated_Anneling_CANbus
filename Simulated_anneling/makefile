@@ -25,15 +25,3 @@ driver.o:
 
 clean:
 	rm *.o
-	rm simulated
-	@echo ""
-	@echo ""
-	@echo "***************************************************************"
-	@echo "*                                                             *"
-	@echo "* Removendo os arquivos .o gerados na compilacao do codigo    *"
-	@echo "*                                                             *"
-	@echo "***************************************************************"
-	@echo ""
-	@echo "Restaram os seguintes arquivos no diretorio:"
-	@ls -la
-	@echo ""

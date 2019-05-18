@@ -55,22 +55,36 @@
 /*****************************************************************************************/
 //(Julio)
 #define TIME_CAN_SIMULATED         120000  /* Tempo que o simulador ira emular*/
-#define RAND_START_DELAY           1       /* Maior porpoção escolhida para StartDelay*/
+#define PORC_START_DELAY           0.5     /* Maior porpoção escolhida para StartDelay*/
 #define ESCALAR_WCRT               1000    /* Escalar F()Objetiva para WCRT*/
 #define ESCALAR_QUEUE              1000    /* Escalar F()Objetiva para tempo max da fila*/
 #define ESCALAR_DELAY              10      /* Escalar F()Objetiva para StartDelay*/
 //
 
-/* Habilita ou desabilita o modo verbose */
+/* Habilita ou desabilita os modos verbose */
 #define SA_VERBOSE                 FALSE
 #define SA_VERBOSE_PROB            FALSE
-#define SA_VERBOSE_IO              TRUE
+#define SA_GRAVA_BEST							 FALSE
+#define SA_GRAVA_VIZINHO           TRUE
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
 #define SA_TIMER                   0
 #define SA_TIMER_SIMULATED         0
 
 #define SA_LOG_ITERADOR            1
+
+/*****************************************************************************************/
+/*                                                                                       */
+/*  Defines para busca e perturbação dos vizinhos                                         */
+/*                                                                                       */
+/*****************************************************************************************/
+
+#define SA_CNF_SELECAO_UNIFORME        0x00
+#define SA_CNF_SELECAO_PROPORCIONAL_ID 0x01
+//(Julio)
+#define SA_CNF_PERT_INCRIMENT          0x00
+#define SA_CNF_PERT_RAND_DELAY         0x01
+#define SA_CNF_PERT_RANDOM             0x02
 
 /*****************************************************************************************/
 /*                                                                                       */
@@ -122,7 +136,7 @@ u_int16_t SaNumMsgCan = 0L;
 /* Slot com proposta de temporizacao para uma mensagem CAN */
 typedef struct
 {
-	u_int16_t Id;	         /* ID da mensagem   */
+	u_int16_t Id:11;	     /* ID da mensagem   */
 	double    TamCiclo;    /* Tamanho do ciclo atual */
 	double    StartDelay;  /* Valor de offset inicial proposto */
 	double    ProbSelecao; /* Probabilidade de selecao da mensagem caso a perturbacao seja proporcional ao ID */
@@ -131,7 +145,7 @@ typedef struct
 /* Estrutura de dados de uma solucao */
 typedef struct
 {
-	u_int16_t       NumMsg;     /* Numero de mensagens CAN contidas na solucao */
+	// u_int16_t       NumMsg;     /* Numero de mensagens CAN contidas na solucao */
 	double          WCRT;       /* Valor da busload associado com a temporizacao proposta */
 	double          Time_Queue; /* Tempo maximo de fila dessa solução*/
 	StSaMsgTmrSlot* pSol;       /* Vetor de slots com parametros propostos para solucao */
@@ -148,17 +162,22 @@ u_int16_t    SaNumVizinhos         = 50L;
 double       SaTempInicial         = 100.0;
 double       SaTempFinal           = 20.0;
 double       SaAlpha               = 0.95;
-u_int16_t    SaNumSlotsPerturbacao = 2L;
+u_int16_t    SaNumSlotsPerturbacao = 1L;
+
 //(Julio)
 u_int8_t SaNumIteracao             = 1;
-u_int8_t SaNumReaquecimento        = 3;
+u_int8_t SaNumReaquecimento        = 0;
+u_int8_t SaMetodoBusca             = SA_CNF_SELECAO_PROPORCIONAL_ID;
+u_int8_t SaMetodoPert              = SA_CNF_PERT_INCRIMENT;
+
+/*Descritores de arquvos, para os logs, modos verbose*/
 FILE*    Arq                       = NULL;
 FILE*    ArqBest                   = NULL;
 
 //
 
 /* Controla posicoes sorteadas pelo SA */
-u_int8_t *pSaBitPosicao;
+u_int8_t* pSaBitPosicao;
 
 /*****************************************************************************************/
 /*                                                                                       */
@@ -169,24 +188,21 @@ void SaLiberaMemoria(void);
 void SaDbgPrintParametros(void);
 void SaAbreArquivoConfiguracao(char* Nome);
 void SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome);
-void SaDefineParametros(u_int16_t NumVizinhos, double TempInicial, double TempFinal, double Alpha, u_int16_t NumTrocas);
 void SaDesalocaSolucao(StSaSolucao *pSolucao);
 void SaClonaSolucao(StSaSolucao *pCopia, StSaSolucao *pBase);
 void SaCriaSolucaoAleatoria(StSaSolucao *pSolucao);
-void SaCriaSolucaoCicloInformado(StSaSolucao* pSolucao);
 void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao);
 void SaGeraArquivoEntradaParaODBC(char* pSaida, StSaSolucao* pSolucao);
 void SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao);
 void SaLogResultado(StSaSolucao* pSolucao, char* Nome);
-void SaDefineParametros(u_int16_t NumVizinhos, double TempInicial, double TempFinal, double Alpha, u_int16_t NumTrocas);
 void SaSimulatedAnnealing(void);
 u_int16_t SaSelecionaSlotProporcionalAoID(StSaSolucao* pSolucao);
-u_int16_t SaSelecionaMaiorCiclo(StSaSolucao *pSolucao);
 u_int16_t SaSelecionaSlotUniforme(StSaSolucao* pSolucao);
-u_int8_t getIndexOfPrimeLesserThan(u_int8_t value);
+u_int8_t  getIndexOfPrimeLesserThan(u_int8_t value);
 StSaSolucao* SaAlocaSolucao(void);
 //(Julio)
 double SaCalculaObjetiva(StSaSolucao* pSolucao);
 void   SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador);
+void   SaGravaSolucaoBest(StSaSolucao* solucao);
 //
 #endif
