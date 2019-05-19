@@ -1,11 +1,20 @@
 #ifndef SIMULADOR
 #define  SIMULADOR
 
+#include <limits.h>
+#include <float.h>
+#include <stdlib.h>
 #include "get_candb.h" // include to structs.h, fifo.h
 
-#define DEBUG        0
-#define PRINT_FRAMES 0
-#define RESULTS      0
+#define FALSE                 0
+#define TRUE                  1
+
+#define DEBUG                 FALSE
+#define PRINT_FRAMES          FALSE
+#define RESULTS               TRUE
+#define LOGFRAMES             TRUE
+
+FILE* ArqLog;
 
 double wcrt;
 double end_time_queue;
@@ -35,6 +44,7 @@ void   verific_queue();
 void   free_recurses();
 void   verific_deadlines();
 void   realloc_event(fifo_t* event);
+void   gravaLogFrames(event_t event);
 void   add_time_lost_arbitrage(double time);
 void   start_simulation(double time_of_simulation);
 int    main_simulated(char* path, double time_simulation);

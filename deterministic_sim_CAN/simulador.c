@@ -10,8 +10,8 @@ int main_simulated(char* path, double time_simulation) {
 
 void start_simulation(double time_end_simulation){
 
-    time_min_queue   = 2147483647;
-    min_length_queue = 65535;
+    time_min_queue   = DBL_MAX;
+    min_length_queue = USHRT_MAX;
     wcrt             = 0;
     number_of_queue  = 0;
     time_mean_queue  = 0;
@@ -25,9 +25,23 @@ void start_simulation(double time_end_simulation){
     acumul_length_queue     = 0;
     time_current_simulation = list_event->first->event.time_happen;
 
+    #if LOGFRAMES
+        ArqLog = fopen("LogFrames.txt", "w");
+        if (!ArqLog){
+            printf("\n================================================================================");
+        		printf("\n[ERRO] Arquivo '%s' falhou em abrir\n\n", "LogFrames");
+        		printf("\n================================================================================\n");
+        		exit(ERROR_IO);
+        }
+        fprintf(ArqLog, "ID\tCYCLE\tTIME_CORRECT\tTIME_LATE\tDELAYED\tDURATION\n");
+    #endif
+
     while(time_current_simulation < time_end_simulation){
           frames_write++;
           aux = get_priority_frame();
+          #if LOGFRAMES
+              gravaLogFrames(aux->event);
+          #endif
           add_time_lost_arbitrage(aux->event.duration);
           realloc_event(aux);
           verific_queue();
@@ -104,6 +118,15 @@ void start_simulation(double time_end_simulation){
         printf("Tempo de simulação     \t %lf (ms)\n\n", time_current_simulation);
     #endif
 
+    #if LOGFRAMES
+        fclose(ArqLog);
+    #endif
+}
+
+
+void gravaLogFrames(event_t event){
+    fprintf(ArqLog, "%ld\t%lf\t%lf\t%lf\t%lf\t%lf\n", event.frame.id, event.frame.cycle_time, event.time_current,
+                  event.time_happen,event.time_happen-event.time_current, event.duration);
 }
 
 fifo_t* get_priority_frame(){
