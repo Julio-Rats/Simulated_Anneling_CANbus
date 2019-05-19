@@ -41,7 +41,7 @@
 #define SA_MAX_CHAR_COMMAND_LINE   512
 
 /* Identifica um slot de parametros ou dados reservado, mas nao usado */
-#define SA_ID_NONE                 ULONG_MAX
+#define SA_ID_NONE                 USHRT_MAX
 
 /* Constantes para verdadeiro ou falso */
 #define TRUE                       1
