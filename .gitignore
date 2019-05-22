@@ -1,7 +1,7 @@
 *.o
 *.gch
-Simulated_anneling/Log*/
-Simulated_anneling/simulated
-deterministic_sim_CAN/simulador
-Simulated_anneling/config.orig.txt
-Simulated_anneling/Tempos.dat
+otimizador
+config.origin.txt
+.R*
+Tempos.dat
+config.txt
