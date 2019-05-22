@@ -14,17 +14,14 @@ NUM_REPETICOES=1
 # Nome dos arquivos de entrada. Ajuste para customizar o script
 ARQ_CONFIG="config.txt"
 ARQ_TMP_ODBC="Tempos.dat"
-#ARQ_LOG_CANOE="log-busload.dat"   #"log.dat"
-ARQ_RESULTADOS="Saida.dat"
+ARQ_RESULTADOS="Result.dat"
 ARQ_LOGOBJ='LogOBJ.dat'
-Path_LOGOBJ='LogOBJ/'
 ARQ_BEST='LogBEST.dat'
-Path_BEST='LogBest/'
 
-# Recompila o codigo
-make clean
-make
-make clean
+Path_Bin='../Bin'
+Path_Result='Results/'
+Path_LOGOBJ='LogOBJ/'
+Path_BEST='LogBest/'
 
 Rdata=$(date +%s)
 
@@ -35,6 +32,6 @@ do
 	data=$(date +%s)
 	echo "Execucao No. $CONTADOR"
 	echo
-	./simulated $ARQ_CONFIG $ARQ_TMP_ODBC $Rdata-$ARQ_RESULTADOS $Path_LOGOBJ$data-$ARQ_LOGOBJ $Path_BEST$data-$ARQ_BEST
+	$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result$Rdata-$ARQ_RESULTADOS $Path_LOGOBJ$data-$ARQ_LOGOBJ $Path_BEST$data-$ARQ_BEST
 	let CONTADOR=CONTADOR+1
 done

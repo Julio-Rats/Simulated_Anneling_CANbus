@@ -3,6 +3,18 @@
 
 #include <stdlib.h>
 
+#define SIMULATION_OK           0
+#define ERROR_IO                1
+#define ERROR_ARGS              2
+#define ERROR_MEMORY            3
+
+#define PATH_LEN                128
+
+#define BITS_FRAMES             70
+#define PAYLOAD_FRAME           64
+#define SPEED_BIT               (double)(pow(2,20)/1000)
+
+
 /*
     frame_t struct definindo um quadro CAN2.0A.
     atributos:

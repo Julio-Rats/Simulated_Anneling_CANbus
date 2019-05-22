@@ -74,7 +74,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 			case 'n':
 			{
 				/* Le a quantidade de mensagens esperada no arquivo */
-				fscanf(pArq, "%ld", &SaNumMsgCan);
+				fscanf(pArq, "%hd", &SaNumMsgCan);
 
 				/* Ignora restante da linha */
 				do
@@ -140,7 +140,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 				{
 					/* Obtem os dados do arquivo correspondente aos parametros da */
 					/* mensagem em questao */
-					fscanf(pArq, "%ld", &Id);
+					fscanf(pArq, "%hd", &Id);
 					fscanf(pArq, "%lf", &MaxCiclo);
 					fgets(NomeMsg, SA_MAX_CHAR_NOME_CAN_MESG, pArq);
 
@@ -176,7 +176,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 			case 'v':
 			{
 				/* Le a quantidade de vizinhos do arquivo */
-				fscanf(pArq, "%ld", &SaNumVizinhos);
+				fscanf(pArq, "%hd", &SaNumVizinhos);
 
 				/* Ignora restante da linha */
 				do
@@ -240,7 +240,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 			case 'p':
 			{
 				/* Le a quantidade de perturbacoes a aplicar */
-				fscanf(pArq, "%ld", &SaNumSlotsPerturbacao);
+				fscanf(pArq, "%hd", &SaNumSlotsPerturbacao);
 
 				/* Ignora restante da linha */
 				do
@@ -256,7 +256,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 			case 'i':
 				{
 					/* Pega o numero do iterador */
-					fscanf(pArq, "%u", &SaNumIteracao);
+					fscanf(pArq, "%hhu", &SaNumIteracao);
 
 					/* Ignora restante da linha */
 					do
@@ -271,7 +271,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 			case 'r':
 				{
 					/* Pega o numero de reaquecimento */
-					fscanf(pArq, "%u", &SaNumReaquecimento);
+					fscanf(pArq, "%hhu", &SaNumReaquecimento);
 
 					/* Ignora restante da linha */
 					do
@@ -377,7 +377,8 @@ void SaDbgPrintParametros(void)
 	u_int16_t i;
 
 	printf("\n================================================================================\n");
-	printf("[INFO] Input Parameters (%ld):\n", SaNumMsgCan);
+	printf("[INFO] Input Parameters (%d):\n", SaNumMsgCan);
+	printf("================================================================================\n\n");
 	for(i = 0; i < SaNumMsgCan; i++)
 	{
 		printf("\nSlot # %d\n", i);
@@ -414,6 +415,7 @@ StSaSolucao* SaAlocaSolucao(void)
 	/* Inicializa solucao */
 	pSolucao->WCRT       = 0.0;
 	pSolucao->Time_Queue = 0.0;
+	pSolucao->Busload    = 0.0;
 	pSolucao->pSol       = (StSaMsgTmrSlot *) malloc(sizeof(StSaMsgTmrSlot) * SaNumMsgCan);
 
 	if(pSolucao->pSol == NULL)
@@ -437,8 +439,6 @@ StSaSolucao* SaAlocaSolucao(void)
 	{
 		pSolucao->pSol[i].Id          = pSaMsgParArray[i].Id;
 		pSolucao->pSol[i].TamCiclo    = pSaMsgParArray[i].MaxCiclo;
-		// pSolucao->pSol[i].Ciclo       = DBL_MIN;
-		// pSolucao->pSol[i].Delay       = DBL_MIN;
 		pSolucao->pSol[i].StartDelay  = DBL_MIN;
 		pSolucao->pSol[i].ProbSelecao = (1.0 / pow(pSaMsgParArray[i].Id, 0.5)) / SomaID;
 	}
@@ -489,8 +489,6 @@ void SaClonaSolucao(StSaSolucao* pCopia, StSaSolucao* pBase)
 		/* Copia dados dos parametros, quando pertinente */
 		pCopia->pSol[i].Id         = pBase->pSol[i].Id;
 		pCopia->pSol[i].TamCiclo   = pBase->pSol[i].TamCiclo;
-		// pCopia->pSol[i].Ciclo    = pBase->pSol[i].Ciclo;
-		// pCopia->pSol[i].Delay    = pBase->pSol[i].Delay;
 		pCopia->pSol[i].StartDelay = pBase->pSol[i].StartDelay;
 	}
 }
@@ -502,15 +500,10 @@ void SaClonaSolucao(StSaSolucao* pCopia, StSaSolucao* pBase)
 /*****************************************************************************************/
 void SaCriaSolucaoAleatoria(StSaSolucao* pSolucao)
 {
-	u_int8_t  i;
-	double    NovoCiclo;
-
+	u_int16_t  i;
 	/* Define aleatoriamente uma alocacao de TamCiclo = (Ciclo + Delay) */
 	for(i = 0; i < SaNumMsgCan; i++)
 	{
-		// pSolucao->pSol[i].Ciclo = round(((double) rand() / RAND_MAX) * pSolucao->pSol[i].TamCiclo);
-		// pSolucao->pSol[i].Delay = pSolucao->pSol[i].TamCiclo - pSolucao->pSol[i].Ciclo;
-		// pSolucao->pSol[i].StartDelay = round(((double) rand() / RAND_MAX) * pSolucao->pSol[i].TamCiclo);
 		pSolucao->pSol[i].StartDelay = (double) (rand() % (int)(pSolucao->pSol[i].TamCiclo*PORC_START_DELAY));
 	}
 }
@@ -522,7 +515,7 @@ void SaCriaSolucaoAleatoria(StSaSolucao* pSolucao)
 /*****************************************************************************************/
 void SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome)
 {
-	u_int8_t i;
+	u_int16_t i;
 
 	/* Exibe os dados da solucao */
 	printf("\n================================================================================");
@@ -538,17 +531,6 @@ void SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome)
 				printf("Message Cycle Time: %.0lf\n",    pSolucao->pSol[i].TamCiclo);
 				printf("Message StartDelay: %.0lf\n",    pSolucao->pSol[i].StartDelay);
 			}
-	#endif
-
-
-	#if SA_VERBOSE
-	//EVERTHON
-		printf("\n[DEBUG] New solution config:\n\n");
-		for(i = 0; i < SaNumMsgCan; i++)
-		{
-			printf("\nmsgID %4d\t cycle %4d\t StartDelay %4d", pSolucao->pSol[i].Id, (u_int8_t)pSolucao->pSol[i].TamCiclo, (u_int8_t)pSolucao->pSol[i].StartDelay);
-		}
-		printf("\n\n");
 	#endif
 
 }
@@ -592,38 +574,6 @@ u_int16_t SaSelecionaSlotProporcionalAoID(StSaSolucao* pSolucao)
 u_int16_t SaSelecionaSlotUniforme(StSaSolucao* pSolucao)
 {
 	return(rand() % SaNumMsgCan);
-}
-
-/*****************************************************************************************/
-/*                                                                                       */
-/* Encontra o índice do último número primo menor que o valor informado                  */
-/*                                                                                       */
-/*****************************************************************************************/
-u_int8_t getIndexOfPrimeLesserThan(u_int8_t value)
-{
-	u_int8_t index = 0;
-
-	if( value <= primes[0] ){
-		return 0;
-	}
-
-	while( (index < PRIMES_SIZE) && (primes[index] < value) ){
-		index++;
-	}
-	index--;
-
-	//DEBUG
-	printf("\n\t\t\t[DEBUG] => cycle=%d > prime[%d]=%d\n", value, index, primes[index]);
-
-	/*
-	if( (index >= PRIMES_SIZE) || (index < 0) ){
-		printf("\t\t\t[DEBUG] error at primeIndex=%d : out of bounds exception [0,%d]\n", index, PRIMES_SIZE-1);
-		exit(1);
-	}
-	*/
-
-	return index;
-
 }
 
 /*****************************************************************************************/
@@ -766,7 +716,7 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 					else
 							pSolucao->pSol[PosTroca].StartDelay = 0;
 			}
-
+			//
 	 }
 }
 
@@ -820,8 +770,10 @@ void SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao)
 
 	/* Pega WCRT e o max tempo de fila após executar no simulador */
 	start_can_simulated(SaArqTempos, TIME_CAN_SIMULATED);
-	pSolucao->WCRT       = get_wcrt_simulation();
-	pSolucao->Time_Queue = get_max_time_queue_simulation();
+
+	pSolucao->WCRT       = GET_WCRT();
+	pSolucao->Time_Queue = GET_MAX_TIME_QUEUE();
+	pSolucao->Busload    = GET_BUSLOAD();
 }
 
 /*****************************************************************************************/
@@ -889,12 +841,10 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
 
 double SaCalculaObjetiva(StSaSolucao* pSolucao){
 		double objetiva;
-		// objetiva = ((ESCALAR_WCRT*pSolucao->WCRT) + (ESCALAR_QUEUE*pSolucao->Time_Queue));
-		//
+
 		objetiva = pSolucao->WCRT*ESCALAR_WCRT;
-		for(u_int16_t i=0; i < SaNumVizinhos; i++)
+		for(u_int16_t i = 0; i < SaNumVizinhos; i++)
 				objetiva += pSolucao->pSol[i].StartDelay*ESCALAR_DELAY;
-				// objetiva += ESCALAR_DELAY*(pSolucao->pSol[i].StartDelay/pSolucao->pSol[i].Id);
 
 		return objetiva;
 }
@@ -905,13 +855,13 @@ double SaCalculaObjetiva(StSaSolucao* pSolucao){
 /*****************************************************************************************/
 
 void SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador){
+		double sum_delay = 0;
 
-		double sum_delay=0;
-		for (u_int16_t i=0; i < SaNumMsgCan; i++){
+		for (u_int16_t i = 0; i < SaNumMsgCan; i++){
 				sum_delay += pSolucao->pSol[i].StartDelay;
 		}
-		fprintf(Arq, "%ld\t%lf\t%lf\t%lf\n", iterador, SaCalculaObjetiva(pSolucao), pSolucao->WCRT, sum_delay);
 
+		fprintf(Arq_Vizinho, "%ld\t%lf\t%lf\t%lf\n", iterador, SaCalculaObjetiva(pSolucao), pSolucao->WCRT, sum_delay);
 }
 
 /*****************************************************************************************/
@@ -928,21 +878,21 @@ void SaGravaSolucaoBest(StSaSolucao* solucao){
 
 	sprintf(path,"%s%ld", SaArqBest, cont++);
 
-	ArqBest = fopen(path, "w");
+	Arq_Best = fopen(path, "w");
 
-	if (!ArqBest){
+	if (!Arq_Best){
 			printf("\n================================================================================");
 			printf("\n[ERRO] falha na alocacao de memoria em SaGravaSolucaoBest()\n\n");
 			printf("\n================================================================================\n");
 			exit(SA_ERRO_MEMORIA);
 	}
 
-	fprintf(ArqBest, "ID\tCYCLE\tOFFSET\tDURATION\n");
+	fprintf(Arq_Best, "ID\tCYCLE\tOFFSET\tDURATION\n");
 	for (u_int16_t i=0; i < SaNumMsgCan; i++){
-			fprintf(ArqBest, "%ld\t%lf\t%lf\t0.1277\n", solucao->pSol[i].Id, solucao->pSol[i].TamCiclo, solucao->pSol[i].StartDelay);
+			fprintf(Arq_Best, "%ld\t%lf\t%lf\t0.1277\n", solucao->pSol[i].Id, solucao->pSol[i].TamCiclo, solucao->pSol[i].StartDelay);
 	}
 
-	fclose(ArqBest);
+	fclose(Arq_Best);
 }
 
 /*****************************************************************************************/
@@ -964,7 +914,7 @@ void SaSimulatedAnnealing(void)
 	u_int8_t		SolNome[512];
 
 	u_int32_t   iterador = 0;
-	u_int8_t    Metodo   = SA_CNF_INICIAL_ALEATORIA;
+	u_int8_t    Metodo   = SA_CNF_INICIO_ZERADO;
 
 	/* Aloca memoria para a solucao inicial e vizinha */
 	pSaCorrente      = SaAlocaSolucao();
@@ -973,8 +923,15 @@ void SaSimulatedAnnealing(void)
 	pSaMelhorVizinho = SaAlocaSolucao();
 
 	#if SA_GRAVA_BEST
-		/*Grava o Best vizinho, solução inicial*/
-		SaGravaSolucaoBest(pSaMelhor);
+			/*Grava o Best vizinho, solução inicial*/
+			// SaGravaSolucaoBest(pSaMelhor);
+			SYNC_FLAG_BEST();
+			SYNC_ITER_BEST();
+
+			log_flag=TRUE;
+			SaEstimaBusloadViaSimulacao(pSaMelhor);
+			log_frame++;
+			log_flag=FALSE;
 	#endif
 
 	/* Inicializa uma solucao com tempos aleatorios */
@@ -1022,7 +979,7 @@ void SaSimulatedAnnealing(void)
 	do
 	{
 		printf("\n================================================================================");
-		printf("\n[INFO] Temperature @ %.2lf Degrees, reheating %d times\n\n", Temperatura, num_reaquecimento);
+		printf("\n[INFO] Temperature @ %.2lf Degrees, reheating %d of %d times\n\n", Temperatura, num_reaquecimento, SaNumReaquecimento);
 		printf("================================================================================\n");
 
 		for (int j = 1; j <= SaNumIteracao; j++)
@@ -1104,7 +1061,11 @@ void SaSimulatedAnnealing(void)
 							printf("\n[INFO] Novo OVERALL encontrado: %lf\n", SaCalculaObjetiva(pSaMelhor));
 						#endif
 						#if SA_GRAVA_BEST
-							SaGravaSolucaoBest(pSaMelhor);]
+								// SaGravaSolucaoBest(pSaMelhor);
+								log_flag=TRUE;
+								SaEstimaBusloadViaSimulacao(pSaMelhor);
+								log_frame++;
+								log_flag=FALSE;
 						#endif
 					}
 				}
@@ -1224,14 +1185,9 @@ u_int8_t main(u_int8_t argc, char **argv)
 	/* Carrega o conteudo do arquivo de configuracao informado */
 	SaAbreArquivoConfiguracao(SaArqConfiguracao);
 
-	/* Exibe o arquivo informado */
-	#if SA_VERBOSE
-		SaDbgPrintParametros();
-	#endif
-
 	#if SA_GRAVA_VIZINHO
-			Arq = fopen(SaArqLogEvolOBJ, "w");
-			if (!Arq){
+			Arq_Vizinho = fopen(SaArqLogEvolOBJ, "w");
+			if (!Arq_Vizinho){
 				printf("\n================================================================================");
 				printf("\n[ERRO] arquivo '%s' não pode ser criado em main()\n\n", SaArqLogEvolOBJ);
 				printf("\n================================================================================\n");
@@ -1269,7 +1225,7 @@ u_int8_t main(u_int8_t argc, char **argv)
 	SaLiberaMemoria();
 
 	#if SA_GRAVA_VIZINHO
-			fclose(Arq);
+			fclose(Arq_Vizinho);
 	#endif
 
 	/* Informa ao sistema operacional que tudo ocorreu conforme previsto */

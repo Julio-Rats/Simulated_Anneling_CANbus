@@ -1,5 +1,7 @@
 #include "simulador.h"
 
+bool* logframes = NULL;
+
 int main_simulated(char* path, double time_simulation) {
 
     input_file(path);
@@ -10,38 +12,31 @@ int main_simulated(char* path, double time_simulation) {
 
 void start_simulation(double time_end_simulation){
 
-    time_min_queue   = DBL_MAX;
-    min_length_queue = USHRT_MAX;
-    wcrt             = 0;
-    number_of_queue  = 0;
-    time_mean_queue  = 0;
-    msg_deadline     = 0;
-    frames_write     = 0;
-    time_max_queue   = 0;
-    length_queue     = 0;
-    msg_deadline     = 0;
-    max_length_queue = 0;
-    fifo_t* aux       = NULL;
+    time_min_queue          = DBL_MAX;
+    min_length_queue        = USHRT_MAX;
+    wcrt                    = 0;
+    number_of_queue         = 0;
+    time_mean_queue         = 0;
+    msg_deadline            = 0;
+    frames_write            = 0;
+    time_max_queue          = 0;
+    length_queue            = 0;
+    msg_deadline            = 0;
+    max_length_queue        = 0;
+    fifo_t* aux              = NULL;
     acumul_length_queue     = 0;
     time_current_simulation = list_event->first->event.time_happen;
 
-    #if LOGFRAMES
-        ArqLog = fopen("LogFrames.txt", "w");
-        if (!ArqLog){
-            printf("\n================================================================================");
-        		printf("\n[ERRO] Arquivo '%s' falhou em abrir\n\n", "LogFrames");
-        		printf("\n================================================================================\n");
-        		exit(ERROR_IO);
-        }
-        fprintf(ArqLog, "ID\tCYCLE\tTIME_CORRECT\tTIME_LATE\tDELAYED\tDURATION\n");
-    #endif
+    if ((logframes)&&(*logframes))
+        gravaLogFramesCab();
 
     while(time_current_simulation < time_end_simulation){
           frames_write++;
           aux = get_priority_frame();
-          #if LOGFRAMES
+
+          if ((logframes)&&(*logframes))
               gravaLogFrames(aux->event);
-          #endif
+
           add_time_lost_arbitrage(aux->event.duration);
           realloc_event(aux);
           verific_queue();
@@ -118,15 +113,39 @@ void start_simulation(double time_end_simulation){
         printf("Tempo de simulação     \t %lf (ms)\n\n", time_current_simulation);
     #endif
 
-    #if LOGFRAMES
-        fclose(ArqLog);
-    #endif
+    if ((logframes)&&(*logframes))
+        fclose(Arq_Log_Best);
+
 }
 
+void gravaLogFramesCab(){
+
+  char* path = (char*) malloc(sizeof(char)*PATH_LEN);
+  if (!path){
+      printf("\n================================================================================");
+      printf("\n[ERRO] Erro malloc(), Variavel '%s' falhou em alocar %d bytes, na função gravaLogFramesCab()\n\n", "path",sizeof(char)*PATH_LEN);
+      printf("\n================================================================================\n");
+      exit(ERROR_MEMORY);
+  }
+
+  sprintf(path, "./LogBest/best%d.txt", *iterador_log);
+  Arq_Log_Best = fopen(path, "w");
+  free(path);
+
+  if (!Arq_Log_Best){
+      printf("\n================================================================================");
+      printf("\n[ERRO] Arquivo '%s' falhou em abrir, função gravaLogFramesCab()\n\n", "LogFrames");
+      printf("\n================================================================================\n");
+      exit(ERROR_IO);
+  }
+
+  fprintf(Arq_Log_Best, "ID\tCYCLE\tTIMEREAL\tTIMESTAMP\tDURATION\tDELAY\n");
+
+}
 
 void gravaLogFrames(event_t event){
-    fprintf(ArqLog, "%ld\t%lf\t%lf\t%lf\t%lf\t%lf\n", event.frame.id, event.frame.cycle_time, event.time_current,
-                  event.time_happen,event.time_happen-event.time_current, event.duration);
+    fprintf(Arq_Log_Best, "%ld\t%lf\t%lf\t%lf\t%lf\t%lf\n", event.frame.id, event.frame.cycle_time, event.time_current
+                                                    , event.time_happen, event.duration, event.time_happen-event.time_current);
 }
 
 fifo_t* get_priority_frame(){

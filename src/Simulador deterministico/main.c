@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
 
     }
 
-  return main_simulated(argv[1], atof(argv[2]));
+  return main_simulated(argv[1], atof(argv[2]), 0, 0);
 
 }
