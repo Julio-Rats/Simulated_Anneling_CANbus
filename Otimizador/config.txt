@@ -46,25 +46,26 @@ m 1763 1000 0
 m 1792 1000 0
 
 # Numero de vizinhos
-v 5
+v 40
 
 #Numero de iterções
-i 1
+i 10
+
+# Numero de reaquecimentos
+r 3
 
 # Temperatura inicial do SA
-s 100.0
+s 1000.0
 
 # Temperatura final do SA
 f 10.0
 
 # Fator de resfriamento Alpha do SA
-a 0.45
+a 0.9
 
 # Numero de perturbacoes na busca local em vizinhanca do SA
 p 1
 
-# Numero de reaquecimentos
-r 1
 
 # Busca de vizinhança b x1 = busca, x2 = modo de pertubação, x1=['u','i'], x2=['r','i','c'], x1-u busca uniforme, x1-i busca proporcional ao ID, x2-r pert random
 # x2-i pert incremental, x2-c pert relacional ao delay atual.
