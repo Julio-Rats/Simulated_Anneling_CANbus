@@ -413,9 +413,9 @@ StSaSolucao* SaAlocaSolucao(void)
 	}
 
 	/* Inicializa solucao */
-	pSolucao->WCRT       = 0.0;
-	pSolucao->Time_Queue = 0.0;
-	pSolucao->Busload    = 0.0;
+	pSolucao->WCRT       = DBL_MAX;
+	pSolucao->Time_Queue = DBL_MAX;
+	pSolucao->Busload    = DBL_MAX;
 	pSolucao->pSol       = (StSaMsgTmrSlot *) malloc(sizeof(StSaMsgTmrSlot) * SaNumMsgCan);
 
 	if(pSolucao->pSol == NULL)
@@ -771,9 +771,9 @@ void SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao)
 	/* Pega WCRT e o max tempo de fila após executar no simulador */
 	start_can_simulated(SaArqTempos, TIME_CAN_SIMULATED);
 
-	pSolucao->WCRT       = GET_WCRT();
-	pSolucao->Time_Queue = GET_MAX_TIME_QUEUE();
-	pSolucao->Busload    = GET_BUSLOAD();
+	pSolucao->WCRT       = wcrt;
+	pSolucao->Time_Queue = time_max_queue;
+	pSolucao->Busload    = busload_simulated;
 }
 
 /*****************************************************************************************/
@@ -914,7 +914,7 @@ void SaSimulatedAnnealing(void)
 	u_int8_t		SolNome[512];
 
 	u_int32_t   iterador = 0;
-	u_int8_t    Metodo   = SA_CNF_INICIO_ZERADO;
+	u_int8_t    Metodo   = SA_CNF_INICIAL_ALEATORIA;
 
 	/* Aloca memoria para a solucao inicial e vizinha */
 	pSaCorrente      = SaAlocaSolucao();
