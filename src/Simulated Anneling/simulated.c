@@ -548,7 +548,7 @@ u_int16_t SaSelecionaSlotProporcionalAoID(StSaSolucao* pSolucao)
 	u_int16_t i;
 
 	/* Escolhe um cursor com viés de U(0,1) */
-	PercSelecionada = (double) rand() / RAND_MAX;
+	PercSelecionada = ((double) rand() / RAND_MAX);
 
 	/* Calcula o valor acumulado ate que encontre o slot */
 	for(Posicao = 0; Posicao < SaNumMsgCan; Posicao++)
@@ -698,7 +698,7 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 				case SA_CNF_PERT_RAND_DELAY:
 					{
 							if (pSolucao->pSol[PosTroca].StartDelay == 0){
-									double prob = rand()/MAX_RAND;
+									double prob = ((double) rand() / RAND_MAX);
 									if (prob <= 0.5)
 										 	pSolucao->pSol[PosTroca].StartDelay = (double) (rand() % ((u_int16_t)(pSolucao->pSol[PosTroca].TamCiclo*PORC_START_DELAY)));
 
@@ -710,7 +710,7 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 			}
 
 			if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay <= 7)){
-					double prob = rand()/MAX_RAND;
+					double prob = ((double) rand() / RAND_MAX);
 					if (prob <= 0.5)
 							pSolucao->pSol[PosTroca].StartDelay = 7;
 					else
@@ -1076,7 +1076,7 @@ void SaSimulatedAnnealing(void)
 
 					/* Sorteia um numero aleatorio entre 0 e 1 */
 					Sorteio = ((double) rand() / RAND_MAX);
-
+					
 					#if SA_VERBOSE_PROB
 						printf("\n[INFO] Prob: %lf, Temp: %lf, Sorteio: %lf, Viz %lf, Cur %lf)\n", Probabilidade, Temperatura, Sorteio, pSaMelhorVizinho->WCRT, pSaCorrente->WCRT);
 					#endif

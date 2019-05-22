@@ -65,7 +65,7 @@
 #define SA_VERBOSE                 FALSE
 #define SA_VERBOSE_PROB						 FALSE
 
-#define SA_GRAVA_BEST							 TRUE
+#define SA_GRAVA_BEST							 FALSE
 #define SA_GRAVA_VIZINHO           TRUE
 #define SA_LOG_ITERADOR            TRUE
 
