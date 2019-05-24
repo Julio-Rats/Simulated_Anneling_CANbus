@@ -46,10 +46,10 @@ m 1763 1000 0
 m 1792 1000 0
 
 # Numero de vizinhos
-v 40
+v 10
 
 #Numero de iterções
-i 10
+i 50
 
 # Numero de reaquecimentos
 r 3
