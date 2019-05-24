@@ -65,7 +65,7 @@
 #define SA_VERBOSE                 FALSE
 #define SA_VERBOSE_PROB						 FALSE
 
-#define SA_GRAVA_BEST							 FALSE
+#define SA_GRAVA_BEST							 TRUE
 #define SA_GRAVA_VIZINHO           TRUE
 #define SA_LOG_ITERADOR            TRUE
 
@@ -171,8 +171,7 @@ u_int8_t     SaMetodoPert          = SA_CNF_PERT_INCRIMENT;
 FILE*    	   Arq_Vizinho            = NULL;
 FILE*    	   Arq_Best               = NULL;
 
-static u_int32_t log_frame          = 0;
-bool             log_flag;
+static u_int32_t log_frame          = 1;
 //
 
 /* Controla posicoes sorteadas pelo SA */

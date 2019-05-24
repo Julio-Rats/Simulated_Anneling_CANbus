@@ -709,13 +709,13 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 					}
 			}
 
-			if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay <= 7)){
-					double prob = ((double) rand() / RAND_MAX);
-					if (prob <= 0.5)
-							pSolucao->pSol[PosTroca].StartDelay = 7;
-					else
-							pSolucao->pSol[PosTroca].StartDelay = 0;
-			}
+			// if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay <= 6)){
+			// 		double prob = ((double) rand() / RAND_MAX);
+			// 		if (prob <= 0.5)
+			// 				pSolucao->pSol[PosTroca].StartDelay = 7.0;
+			// 		else
+			// 				pSolucao->pSol[PosTroca].StartDelay = 0.0;
+			// }
 			//
 	 }
 }
@@ -914,7 +914,7 @@ void SaSimulatedAnnealing(void)
 	u_int8_t		SolNome[512];
 
 	u_int32_t   iterador = 0;
-	u_int8_t    Metodo   = SA_CNF_INICIAL_ALEATORIA;
+	u_int8_t    Metodo   = SA_CNF_INICIO_ZERADO;
 
 	/* Aloca memoria para a solucao inicial e vizinha */
 	pSaCorrente      = SaAlocaSolucao();
@@ -923,15 +923,13 @@ void SaSimulatedAnnealing(void)
 	pSaMelhorVizinho = SaAlocaSolucao();
 
 	#if SA_GRAVA_BEST
-			/*Grava o Best vizinho, solução inicial*/
-			// SaGravaSolucaoBest(pSaMelhor);
-			SYNC_FLAG_BEST();
-			SYNC_ITER_BEST();
-
-			log_flag=TRUE;
+			char path_file_best[SA_MAX_CHAR_COMMAND_LINE+5];
+			sprintf(path_file_best, "%s-%ld.dat", SaArqBest, log_frame++);
+			Arq_Log_Best = fopen(path_file_best, "w");
+			logframes = TRUE;
 			SaEstimaBusloadViaSimulacao(pSaMelhor);
-			log_frame++;
-			log_flag=FALSE;
+			logframes = FALSE;
+			fclose(Arq_Log_Best);
 	#endif
 
 	/* Inicializa uma solucao com tempos aleatorios */
@@ -987,17 +985,17 @@ void SaSimulatedAnnealing(void)
 
 			/* Clona a solucao atual como sendo o 'melhor vizinho' a encontrar. Se encontrarmos */
 			/* um melhor ainda, atualizamos ao longo da busca na vizinhanca */
-			SaClonaSolucao(pSaMelhorVizinho, pSaCorrente);
-			SaPerturbaSolucaoVizinhancaUniforme(pSaMelhorVizinho);
-			SaEstimaBusloadViaSimulacao(pSaMelhorVizinho);
+			// SaClonaSolucao(pSaVizinho, pSaCorrente);
+			// SaPerturbaSolucaoVizinhancaUniforme(pSaMelhorVizinho);
+			// SaEstimaBusloadViaSimulacao(pSaMelhorVizinho);
 
 			/*iterador do SA*/
 			iterador++;
 
 			/* Varre a vizinhanca da solucao atual em busca de um vizinho mais interessante */
 			/* em termos de atribuição de tempos para as mensagens CAN e Busload estimado   */
-			for(i = 1; i <= SaNumVizinhos; i++)
-			{
+			// for(i = 1; i <= SaNumVizinhos; i++)
+			// {
 
 					/*iterador do SA*/
 					// iterador++;
@@ -1017,25 +1015,25 @@ void SaSimulatedAnnealing(void)
 
 					/* Verifica se o vizinho encontrado tem wcrt melhor do que o melhor */
 					/* ja conhecido até então */
-					if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhorVizinho))
-					{
-						#if SA_VERBOSE_PROB
-							printf("\n[INFO] Atualiza melhor dos vizinhos: %.2lf com %.2lf\n", SaCalculaObjetiva(pSaMelhorVizinho), SaCalculaObjetiva(pSaVizinho));
-						#endif
-
-						/* Atualiza melhor vizinho desta iteracao */
-						SaClonaSolucao(pSaMelhorVizinho, pSaVizinho);
-					}
+					// if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhorVizinho))
+					// {
+					// 	#if SA_VERBOSE_PROB
+					// 		printf("\n[INFO] Atualiza melhor dos vizinhos: %.2lf com %.2lf\n", SaCalculaObjetiva(pSaMelhorVizinho), SaCalculaObjetiva(pSaVizinho));
+					// 	#endif
+					//
+					// 	/* Atualiza melhor vizinho desta iteracao */
+					// 	SaClonaSolucao(pSaMelhorVizinho, pSaVizinho);
+					// }
 					// #if SA_GRAVA_VIZINHO
 					// 	 // usleep(300);
 					//   /*Grava em arquivo solução corrente*/
 					// 	 SaGravaSolucaoCurrent(pSaVizinho, iterador);
 					// #endif
-				}
+
 
 				/* Embora seja uma solucao com busload pior, pode atualizar se passar no criterio */
 				/* de aceitacao de Boltzman */
-				Delta = (SaCalculaObjetiva(pSaMelhorVizinho)-SaCalculaObjetiva(pSaCorrente));
+				Delta = (SaCalculaObjetiva(pSaVizinho)-SaCalculaObjetiva(pSaCorrente));
 
 				/* Caso o melhor dos vizinhos seja melhor do que a melhor solucao conhecida, atualiza */
 				if(Delta <= 0.0)
@@ -1045,27 +1043,28 @@ void SaSimulatedAnnealing(void)
 					#endif
 
 					/* Atualiza a solucao corrente e a 'overall' */
-					SaClonaSolucao(pSaCorrente, pSaMelhorVizinho);
+					SaClonaSolucao(pSaCorrente, pSaVizinho);
 
 					#if SA_VERBOSE_PROB
 						SaDbgExibeSolucao(pSaMelhor, "pSaMelhor");
 					#endif
 
 					/* Verifica se o melhor vizinho é melhor do que a 'overall solution' */
-					if(SaCalculaObjetiva(pSaMelhorVizinho) < SaCalculaObjetiva(pSaMelhor))
+					if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhor))
 					{
 						/* Atualiza a melhor de todas as solucoes */
-						SaClonaSolucao(pSaMelhor, pSaMelhorVizinho);
+						SaClonaSolucao(pSaMelhor, pSaVizinho);
 
 						#if SA_VERBOSE_PROB
 							printf("\n[INFO] Novo OVERALL encontrado: %lf\n", SaCalculaObjetiva(pSaMelhor));
 						#endif
 						#if SA_GRAVA_BEST
-								// SaGravaSolucaoBest(pSaMelhor);
-								log_flag=TRUE;
+								sprintf(path_file_best, "%s-%ld.dat", SaArqBest, log_frame++);
+								Arq_Log_Best = fopen(path_file_best, "w");
+								logframes = TRUE;
 								SaEstimaBusloadViaSimulacao(pSaMelhor);
-								log_frame++;
-								log_flag=FALSE;
+								logframes = FALSE;
+								fclose(Arq_Log_Best);
 						#endif
 					}
 				}
@@ -1076,16 +1075,16 @@ void SaSimulatedAnnealing(void)
 
 					/* Sorteia um numero aleatorio entre 0 e 1 */
 					Sorteio = ((double) rand() / RAND_MAX);
-					
+
 					#if SA_VERBOSE_PROB
-						printf("\n[INFO] Prob: %lf, Temp: %lf, Sorteio: %lf, Viz %lf, Cur %lf)\n", Probabilidade, Temperatura, Sorteio, pSaMelhorVizinho->WCRT, pSaCorrente->WCRT);
+						printf("\n[INFO] Prob: %lf, Temp: %lf, Sorteio: %lf, Viz %lf, Cur %lf)\n", Probabilidade, Temperatura, Sorteio, pSaVizinho->WCRT, pSaCorrente->WCRT);
 					#endif
 
 					/* Se valor sorteado esta dentro do criterio, atualiza solucao corrente */
 					if(Sorteio <= Probabilidade)
 					{
 						/* Atualiza apenas a solucao corrente, nao a 'overall' */
-						SaClonaSolucao(pSaCorrente, pSaMelhorVizinho);
+						SaClonaSolucao(pSaCorrente, pSaVizinho);
 
 						#if SA_VERBOSE_PROB
 							SaDbgExibeSolucao(pSaCorrente, "pSaCorrente (Passou Criterio Boltzman)");
@@ -1097,6 +1096,7 @@ void SaSimulatedAnnealing(void)
 					 /*Grava em arquivo solução corrente*/
 					 SaGravaSolucaoCurrent(pSaCorrente, iterador);
 			  #endif
+				// }
 		}
 		/* Decai a temperatura de acordo com o valor de Alpha */
 		Temperatura = Temperatura*SaAlpha;
