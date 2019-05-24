@@ -20,11 +20,10 @@ typedef u_int8_t bool;
 #define RESULTS               FALSE
 
 /* Arquivo de saida para Log de Bests gerado no S.A */
-FILE*      Arq_Log_Best;
+FILE*  Arq_Log_Best;
 
 /* Variavel de controle para escrita do arquivo de log BEST solution*/
-extern bool*      logframes;
-u_int32_t*        iterador_log;
+extern bool logframes;
 
 double     wcrt;
 double     end_time_queue;

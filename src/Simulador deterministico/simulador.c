@@ -1,6 +1,6 @@
 #include "simulador.h"
 
-bool* logframes = NULL;
+bool logframes = FALSE;
 
 int main_simulated(char* path, double time_simulation) {
 
@@ -27,14 +27,14 @@ void start_simulation(double time_end_simulation){
     acumul_length_queue     = 0;
     time_current_simulation = list_event->first->event.time_happen;
 
-    if ((logframes)&&(*logframes))
+    if (logframes)
         gravaLogFramesCab();
 
     while(time_current_simulation < time_end_simulation){
           frames_write++;
           aux = get_priority_frame();
 
-          if ((logframes)&&(*logframes))
+          if (logframes)
               gravaLogFrames(aux->event);
 
           add_time_lost_arbitrage(aux->event.duration);
@@ -113,33 +113,16 @@ void start_simulation(double time_end_simulation){
         printf("Tempo de simulação     \t %lf (ms)\n\n", time_current_simulation);
     #endif
 
-    if ((logframes)&&(*logframes))
-        fclose(Arq_Log_Best);
-
 }
 
 void gravaLogFramesCab(){
-
-  char* path = (char*) malloc(sizeof(char)*PATH_LEN);
-  if (!path){
-      printf("\n================================================================================");
-      printf("\n[ERRO] Erro malloc(), Variavel '%s' falhou em alocar %d bytes, na função gravaLogFramesCab()\n\n", "path",sizeof(char)*PATH_LEN);
-      printf("\n================================================================================\n");
-      exit(ERROR_MEMORY);
-  }
-
-  sprintf(path, "./LogBest/best%d.txt", *iterador_log);
-  Arq_Log_Best = fopen(path, "w");
-  free(path);
-
-  if (!Arq_Log_Best){
-      printf("\n================================================================================");
-      printf("\n[ERRO] Arquivo '%s' falhou em abrir, função gravaLogFramesCab()\n\n", "LogFrames");
-      printf("\n================================================================================\n");
-      exit(ERROR_IO);
-  }
-
-  fprintf(Arq_Log_Best, "ID\tCYCLE\tTIMEREAL\tTIMESTAMP\tDURATION\tDELAY\n");
+    if (!Arq_Log_Best){
+        printf("\n================================================================================");
+        printf("\n[ERRO] Arquivo '%s' falhou em abrir, função gravaLogFramesCab()\n\n", "LogFrames");
+        printf("\n================================================================================\n");
+        exit(ERROR_IO);
+    }
+    fprintf(Arq_Log_Best, "ID\tCYCLE\tTIMEREAL\tTIMESTAMP\tDURATION\tDELAY\n");
 
 }
 
