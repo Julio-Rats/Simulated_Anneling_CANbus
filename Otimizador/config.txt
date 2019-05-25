@@ -66,6 +66,8 @@ a 0.9
 # Numero de perturbacoes na busca local em vizinhanca do SA
 p 1
 
+#Vizinho inicial z = zero, a = aleatoria
+c z
 
 # Busca de vizinhança b x1 = busca, x2 = modo de pertubação, x1=['u','i'], x2=['r','i','c'], x1-u busca uniforme, x1-i busca proporcional ao ID, x2-r pert random
 # x2-i pert incremental, x2-c pert relacional ao delay atual.
