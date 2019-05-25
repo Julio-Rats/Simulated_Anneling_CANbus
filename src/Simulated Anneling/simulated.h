@@ -55,7 +55,7 @@
 /*****************************************************************************************/
 //(Julio)
 #define TIME_CAN_SIMULATED         120000  /* Tempo que o simulador ira emular*/
-#define PORC_START_DELAY           0.5     /* Maior porpoção escolhida para StartDelay*/
+#define PORC_START_DELAY           1       /* Maior porpoção escolhida para StartDelay*/
 #define ESCALAR_WCRT               1000    /* Escalar F()Objetiva para WCRT*/
 #define ESCALAR_QUEUE              1000    /* Escalar F()Objetiva para tempo max da fila*/
 #define ESCALAR_DELAY              10      /* Escalar F()Objetiva para StartDelay*/
@@ -65,8 +65,8 @@
 #define SA_VERBOSE                 FALSE
 #define SA_VERBOSE_PROB						 FALSE
 
-#define SA_GRAVA_BEST							 TRUE
-#define SA_GRAVA_VIZINHO           TRUE
+#define SA_GRAVA_BEST							 FALSE
+#define SA_GRAVA_VIZINHO           FALSE
 #define SA_LOG_ITERADOR            TRUE
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
@@ -86,6 +86,8 @@
 #define SA_CNF_PERT_INCRIMENT          0x00
 #define SA_CNF_PERT_RAND_DELAY         0x01
 #define SA_CNF_PERT_RANDOM             0x02
+#define SA_CNF_START_RANDOM            0x01
+#define SA_CNF_START_ZERO              0x02
 //
 
 /*****************************************************************************************/
@@ -95,14 +97,14 @@
 /*****************************************************************************************/
 
 /* Codigo de erros para as operacoes criticas realizadas pela aplicacao */
-#define SA_ERRO_NONE               0
-#define SA_ERRO_IO                 1
-#define SA_ERRO_MEMORIA            2
-#define SA_ERRO_ARGS_INVALIDOS     3
-#define SA_ERRO_PARSING_CONFIG     4
-#define SA_ERRO_NO_VALUE           5
-#define SA_ERRO_ESTADO             6
-#define SA_ERRO_CONFIGURACAO       7
+#define SA_ERRO_NONE                      0
+#define SA_ERRO_IO                        1
+#define SA_ERRO_MEMORIA                   2
+#define SA_ERRO_ARGS_INVALIDOS            3
+#define SA_ERRO_PARSING_CONFIG            4
+#define SA_ERRO_NO_VALUE                  5
+#define SA_ERRO_ESTADO                    6
+#define SA_ERRO_CONFIGURACAO              7
 
 /*****************************************************************************************/
 /*                                                                                       */
@@ -166,6 +168,7 @@ u_int8_t     SaNumIteracao         = 1;
 u_int8_t     SaNumReaquecimento    = 0;
 u_int8_t     SaMetodoBusca         = SA_CNF_SELECAO_PROPORCIONAL_ID;
 u_int8_t     SaMetodoPert          = SA_CNF_PERT_INCRIMENT;
+u_int8_t     SaMetodoInicial       = SA_CNF_START_ZERO;
 
 /*Descritores de arquvos, para os logs, modos verbose*/
 FILE*    	   Arq_Vizinho            = NULL;
@@ -183,23 +186,22 @@ u_int8_t* pSaBitPosicao;
 /*                                                                                       */
 /*****************************************************************************************/
 void         SaLiberaMemoria(void);
+void         SaSimulatedAnnealing(void);
 void         SaDbgPrintParametros(void);
 void         SaAbreArquivoConfiguracao(char* Nome);
-void         SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome);
-void         SaDesalocaSolucao(StSaSolucao *pSolucao);
-void         SaClonaSolucao(StSaSolucao *pCopia, StSaSolucao *pBase);
-void         SaCriaSolucaoAleatoria(StSaSolucao *pSolucao);
-void         SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao);
-void         SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao);
-void         SaLogResultado(StSaSolucao* pSolucao, char* Nome);
-void         SaSimulatedAnnealing(void);
-u_int16_t    SaSelecionaSlotProporcionalAoID(StSaSolucao* pSolucao);
-u_int16_t    SaSelecionaSlotUniforme(StSaSolucao* pSolucao);
-u_int8_t     getIndexOfPrimeLesserThan(u_int8_t value);
-StSaSolucao* SaAlocaSolucao(void);
-//(Julio)
-double       SaCalculaObjetiva(StSaSolucao* pSolucao);
-void         SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador);
 void         SaGravaSolucaoBest(StSaSolucao* solucao);
-//
+void         SaDesalocaSolucao(StSaSolucao *pSolucao);
+void         SaCriaSolucaoAleatoria(StSaSolucao *pSolucao);
+void         SaLogResultado(StSaSolucao* pSolucao, char* Nome);
+void         SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao);
+void         SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome);
+void         SaClonaSolucao(StSaSolucao *pCopia, StSaSolucao *pBase);
+void         SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao);
+void         SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador);
+u_int8_t     getIndexOfPrimeLesserThan(u_int8_t value);
+u_int16_t    SaSelecionaSlotUniforme(StSaSolucao* pSolucao);
+u_int16_t    SaSelecionaSlotProporcionalAoID(StSaSolucao* pSolucao);
+StSaSolucao* SaAlocaSolucao(void);
+double       SaCalculaObjetiva(StSaSolucao* pSolucao);
+
 #endif

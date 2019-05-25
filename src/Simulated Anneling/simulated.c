@@ -282,6 +282,42 @@ void SaAbreArquivoConfiguracao(char* Nome)
 
 					break;
 				}
+				/*Metodo do vizinho inicial */
+				case 'c':
+				{
+						char solucao_start;
+						fscanf(pArq, "%c", &Lixo);
+						fscanf(pArq, "%c", &solucao_start);
+
+						switch (solucao_start) {
+								case 'a':
+								{
+										SaMetodoInicial = SA_CNF_START_RANDOM;
+										break;
+								}
+								case 'z':
+								{
+										SaMetodoInicial = SA_CNF_START_ZERO;
+										break;
+								}
+								default:
+								{
+									printf("\n================================================================================");
+									printf("\n[ERRO] Entrada para vizinho inicial desconhecida '%c' na linha %d do arquivo '%s'\n\n", solucao_start, Linha, Nome);
+									printf("\n================================================================================\n");
+									exit(SA_ERRO_PARSING_CONFIG);
+									break;
+								}
+						}
+						/* Ignora restante da linha */
+						do
+						{
+							fscanf(pArq, "%c", &Lixo);
+						}
+						while(Lixo != '\n');
+
+						break;
+				}
 				/*Metodo de busca vizinhanca*/
 				case 'b':
 					{
@@ -334,7 +370,7 @@ void SaAbreArquivoConfiguracao(char* Nome)
 							default:
 							{
 								printf("\n================================================================================");
-								printf("\n[ERRO] Entrada para pertubação de vizinhança desconhecida '%c' na linha %d do arquivo '%s'\n\n", busca, Linha, Nome);
+								printf("\n[ERRO] Entrada para pertubação de vizinhança desconhecida '%c' na linha %d do arquivo '%s'\n\n", pertub, Linha, Nome);
 								printf("\n================================================================================\n");
 								exit(SA_ERRO_PARSING_CONFIG);
 								break;
