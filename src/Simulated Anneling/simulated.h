@@ -66,8 +66,7 @@
 #define SA_VERBOSE_PROB						 FALSE
 
 #define SA_GRAVA_BEST							 FALSE
-#define SA_GRAVA_VIZINHO           FALSE
-#define SA_LOG_ITERADOR            TRUE
+#define SA_GRAVA_OBJ               FALSE
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
 #define SA_TIMER                   0
@@ -171,7 +170,7 @@ u_int8_t     SaMetodoPert          = SA_CNF_PERT_INCRIMENT;
 u_int8_t     SaMetodoInicial       = SA_CNF_START_ZERO;
 
 /*Descritores de arquvos, para os logs, modos verbose*/
-FILE*    	   Arq_Vizinho            = NULL;
+FILE*    	   Arq_OBJ            = NULL;
 FILE*    	   Arq_Best               = NULL;
 
 static u_int32_t log_frame          = 1;

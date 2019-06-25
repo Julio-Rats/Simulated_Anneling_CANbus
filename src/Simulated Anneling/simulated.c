@@ -745,6 +745,8 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 					}
 			}
 
+			/* CODIGO ABAIXO É A LIMITAÇÃO DE 7 MS PARA O DELAY */
+
 			// if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay <= 6)){
 			// 		double prob = ((double) rand() / RAND_MAX);
 			// 		if (prob <= 0.5)
@@ -829,13 +831,11 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
 
 	/* Verificar se o arquivo foi aberto. Se sim, abre para append, caso contrario cria antes */
 	if(pArq == NULL)
-	{
-		/* Cria arquivo do zero */
-		pArq = fopen(Nome, "w+");
-	}
-
-	/* Abre arquivo para 'append' */
-	// pArq = fopen(Nome, "a");
+		 	/* Cria arquivo do zero */
+			pArq = fopen(Nome, "w+");
+	else
+			/* Abre arquivo para 'append' */
+			pArq = fopen(Nome, "a");
 
 	/* Verifica se o arquivo foi criado com sucesso */
 	if(pArq == NULL)
@@ -879,7 +879,7 @@ double SaCalculaObjetiva(StSaSolucao* pSolucao){
 		double objetiva;
 
 		objetiva = pSolucao->WCRT*ESCALAR_WCRT;
-		for(u_int16_t i = 0; i < SaNumVizinhos; i++)
+		for(u_int16_t i = 0; i < SaNumMsgCan; i++)
 				objetiva += pSolucao->pSol[i].StartDelay*ESCALAR_DELAY;
 
 		return objetiva;
@@ -897,7 +897,7 @@ void SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador){
 				sum_delay += pSolucao->pSol[i].StartDelay;
 		}
 
-		fprintf(Arq_Vizinho, "%ld\t%lf\t%lf\t%lf\n", iterador, SaCalculaObjetiva(pSolucao), pSolucao->WCRT, sum_delay);
+		fprintf(Arq_OBJ, "%ld\t%lf\t%lf\t%lf\n", iterador, SaCalculaObjetiva(pSolucao), pSolucao->WCRT, sum_delay);
 }
 
 /*****************************************************************************************/
@@ -962,9 +962,15 @@ void SaSimulatedAnnealing(void)
 			char path_file_best[SA_MAX_CHAR_COMMAND_LINE+5];
 			sprintf(path_file_best, "%s-%ld.dat", SaArqBest, log_frame++);
 			Arq_Log_Best = fopen(path_file_best, "w");
-			logframes = TRUE;
+			if (!Arq_Log_Best){
+					printf("\n================================================================================");
+					printf("\n[ERRO] arquivo '%s' não pode ser criado em SaSimulatedAnnealing()\n\n", path_file_best);
+					printf("\n================================================================================\n");
+					exit(SA_ERRO_IO);
+			}
+			logframes    = TRUE;
 			SaEstimaBusloadViaSimulacao(pSaMelhor);
-			logframes = FALSE;
+			logframes    = FALSE;
 			fclose(Arq_Log_Best);
 	#endif
 
@@ -980,6 +986,7 @@ void SaSimulatedAnnealing(void)
 		}
 		case SA_CNF_INICIO_ZERADO:
 		{
+			/* ja começa zerado os start_delays */
 			break;
 		}
 		/* Configuracao invalida */
@@ -1018,54 +1025,19 @@ void SaSimulatedAnnealing(void)
 
 		for (int j = 1; j <= SaNumIteracao; j++)
 		{
+				/*iterador do SA*/
+				iterador++;
+				/* Cria uma copia do vizinho a partir da melhor solucao corrente */
+				SaClonaSolucao(pSaVizinho, pSaCorrente);
+				/* Perturba a solucao vizinho, de forma a gerar nova temporizacao proposta */
+				SaPerturbaSolucaoVizinhancaUniforme(pSaVizinho);
+				/* Avalia o Busload da solucao usando simulacao */
+				SaEstimaBusloadViaSimulacao(pSaVizinho);
 
-			/* Clona a solucao atual como sendo o 'melhor vizinho' a encontrar. Se encontrarmos */
-			/* um melhor ainda, atualizamos ao longo da busca na vizinhanca */
-			// SaClonaSolucao(pSaVizinho, pSaCorrente);
-			// SaPerturbaSolucaoVizinhancaUniforme(pSaMelhorVizinho);
-			// SaEstimaBusloadViaSimulacao(pSaMelhorVizinho);
-
-			/*iterador do SA*/
-			iterador++;
-
-			/* Varre a vizinhanca da solucao atual em busca de um vizinho mais interessante */
-			/* em termos de atribuição de tempos para as mensagens CAN e Busload estimado   */
-			// for(i = 1; i <= SaNumVizinhos; i++)
-			// {
-
-					/*iterador do SA*/
-					// iterador++;
-
-					/* Cria uma copia do vizinho a partir da melhor solucao corrente */
-					SaClonaSolucao(pSaVizinho, pSaCorrente);
-					/* Perturba a solucao vizinho, de forma a gerar nova temporizacao proposta */
-					SaPerturbaSolucaoVizinhancaUniforme(pSaVizinho);
-					/* Avalia o Busload da solucao usando simulacao */
-					SaEstimaBusloadViaSimulacao(pSaVizinho);
-
-
-					#if SA_VERBOSE_PROB
-							sprintf(SolNome, "\n[INFO] pSaVizinho # %d @ %lf", i, Temperatura);
-							SaDbgExibeSolucao(pSaVizinho, SolNome);
-					#endif
-
-					/* Verifica se o vizinho encontrado tem wcrt melhor do que o melhor */
-					/* ja conhecido até então */
-					// if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhorVizinho))
-					// {
-					// 	#if SA_VERBOSE_PROB
-					// 		printf("\n[INFO] Atualiza melhor dos vizinhos: %.2lf com %.2lf\n", SaCalculaObjetiva(pSaMelhorVizinho), SaCalculaObjetiva(pSaVizinho));
-					// 	#endif
-					//
-					// 	/* Atualiza melhor vizinho desta iteracao */
-					// 	SaClonaSolucao(pSaMelhorVizinho, pSaVizinho);
-					// }
-					// #if SA_GRAVA_VIZINHO
-					// 	 // usleep(300);
-					//   /*Grava em arquivo solução corrente*/
-					// 	 SaGravaSolucaoCurrent(pSaVizinho, iterador);
-					// #endif
-
+				#if SA_VERBOSE_PROB
+						sprintf(SolNome, "\n[INFO] pSaVizinho # %d @ %lf", i, Temperatura);
+						SaDbgExibeSolucao(pSaVizinho, SolNome);
+				#endif
 
 				/* Embora seja uma solucao com busload pior, pode atualizar se passar no criterio */
 				/* de aceitacao de Boltzman */
@@ -1074,35 +1046,41 @@ void SaSimulatedAnnealing(void)
 				/* Caso o melhor dos vizinhos seja melhor do que a melhor solucao conhecida, atualiza */
 				if(Delta <= 0.0)
 				{
-					#if SA_VERBOSE_PROB
-						printf("[INFO] Encontrado melhor do que corrente: %lf contra %lf\n", SaCalculaObjetiva(pSaMelhorVizinho), SaCalculaObjetiva(pSaCorrente));
-					#endif
+						#if SA_VERBOSE_PROB
+							printf("[INFO] Encontrado melhor do que corrente: %lf contra %lf\n", SaCalculaObjetiva(pSaMelhorVizinho), SaCalculaObjetiva(pSaCorrente));
+						#endif
 
-					/* Atualiza a solucao corrente e a 'overall' */
-					SaClonaSolucao(pSaCorrente, pSaVizinho);
-
-					#if SA_VERBOSE_PROB
-						SaDbgExibeSolucao(pSaMelhor, "pSaMelhor");
-					#endif
-
-					/* Verifica se o melhor vizinho é melhor do que a 'overall solution' */
-					if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhor))
-					{
-						/* Atualiza a melhor de todas as solucoes */
-						SaClonaSolucao(pSaMelhor, pSaVizinho);
+						/* Atualiza a solucao corrente e a 'overall' */
+						SaClonaSolucao(pSaCorrente, pSaVizinho);
 
 						#if SA_VERBOSE_PROB
-							printf("\n[INFO] Novo OVERALL encontrado: %lf\n", SaCalculaObjetiva(pSaMelhor));
+							SaDbgExibeSolucao(pSaMelhor, "pSaMelhor");
 						#endif
-						#if SA_GRAVA_BEST
-								sprintf(path_file_best, "%s-%ld.dat", SaArqBest, log_frame++);
-								Arq_Log_Best = fopen(path_file_best, "w");
-								logframes = TRUE;
-								SaEstimaBusloadViaSimulacao(pSaMelhor);
-								logframes = FALSE;
-								fclose(Arq_Log_Best);
-						#endif
-					}
+
+						/* Verifica se o melhor vizinho é melhor do que a 'overall solution' */
+						if(SaCalculaObjetiva(pSaVizinho) < SaCalculaObjetiva(pSaMelhor))
+						{
+								/* Atualiza a melhor de todas as solucoes */
+								SaClonaSolucao(pSaMelhor, pSaVizinho);
+
+								#if SA_VERBOSE_PROB
+									printf("\n[INFO] Novo OVERALL encontrado: %lf\n", SaCalculaObjetiva(pSaMelhor));
+								#endif
+								#if SA_GRAVA_BEST
+										sprintf(path_file_best, "%s-%ld.dat", SaArqBest, log_frame++);
+										Arq_Log_Best = fopen(path_file_best, "w");
+										if (!Arq_Log_Best){
+												printf("\n================================================================================");
+												printf("\n[ERRO] arquivo '%s' não pode ser criado em SaSimulatedAnnealing()\n\n", path_file_best);
+												printf("\n================================================================================\n");
+												exit(SA_ERRO_IO);
+										}
+										logframes    = TRUE;
+										SaEstimaBusloadViaSimulacao(pSaMelhor);
+										logframes    = FALSE;
+										fclose(Arq_Log_Best);
+								#endif
+						}
 				}
 				else
 				{
@@ -1127,12 +1105,11 @@ void SaSimulatedAnnealing(void)
 						#endif
 					}
 				}
-			  #if SA_GRAVA_VIZINHO
+			  #if SA_GRAVA_OBJ
 				 	 // usleep(300);
 					 /*Grava em arquivo solução corrente*/
 					 SaGravaSolucaoCurrent(pSaCorrente, iterador);
 			  #endif
-				// }
 		}
 		/* Decai a temperatura de acordo com o valor de Alpha */
 		Temperatura = Temperatura*SaAlpha;
@@ -1202,28 +1179,57 @@ u_int8_t main(u_int8_t argc, char **argv)
 	/* Inicializa gerador de numeros aleatorios com semente dada pelo timestamp do sistema */
 	srand(time(NULL));
 
-	/* Verifica a quantidade de argumentos informada */
-	if(((SA_LOG_ITERADOR)&&(argc < 4)) || ((!SA_LOG_ITERADOR)&&(argc < 3)))
-	{
-		printf("\n================================================================================");
-		printf("\n[ERRO] Sintaxe incorreta. Usar:\n\nsimulated <arq. config> <arq. tempos> <arq. saida> <arq. LogOBJ>\n\n");
-		printf("\n================================================================================\n");
-		exit(SA_ERRO_ARGS_INVALIDOS);
+	void erro_args(int op){
+			printf("\n================================================================================\n\n");
+			switch (op) {
+				case 0:
+						printf("[ERRO] Sintaxe incorreta. Usar:\n\n%s <arq. Config> <arq. Tempos> <arq. Result>\n", argv[0]);
+				break;
+				case 1:
+						printf("[ERRO] Sintaxe incorreta. Usar:\n\n%s <arq. Config> <arq. Tempos> <arq. Result> <arq. LogOBJ>\n", argv[0]);
+				break;
+				case 2:
+						printf("[ERRO] Sintaxe incorreta. Usar:\n\n%s <arq. Config> <arq. Tempos> <arq. Result> <arq. LogBest>\n", argv[0]);
+				break;
+				case 3:
+						printf("[ERRO] Sintaxe incorreta. Usar:\n\n%s <arq. Config> <arq. Tempos> <arq. Result> <arq. LogOBJ> <arq. LogBest>\n", argv[0]);
+				break;
+			}
+			printf("\n================================================================================\n\n");
+			exit(SA_ERRO_ARGS_INVALIDOS);
 	}
+
+	/* Verifica a quantidade de argumentos informada */
+	if (SA_GRAVA_BEST && SA_GRAVA_OBJ){
+		if (argc != 6)
+			erro_args(3);
+	}else if (SA_GRAVA_BEST){
+			if (argc != 5)
+				erro_args(2);
+	}else if (SA_GRAVA_OBJ){
+			if (argc != 5)
+				erro_args(1);
+	}else if (argc != 4)
+			erro_args(0);
 
 	/* Guarda o nome dos arquivos informados */
 	strcpy(SaArqConfiguracao, argv[1]);
 	strcpy(SaArqTempos,      argv[2]);
 	strcpy(SaArqSaida,       argv[3]);
-	strcpy(SaArqLogEvolOBJ,  argv[4]);
-	strcpy(SaArqBest,        argv[5]);
+	if (SA_GRAVA_BEST && SA_GRAVA_OBJ){
+			strcpy(SaArqLogEvolOBJ,  argv[4]);
+			strcpy(SaArqBest,        argv[5]);
+	}else if (SA_GRAVA_BEST){
+			strcpy(SaArqBest,        argv[4]);
+	}else if (SA_GRAVA_OBJ)
+			strcpy(SaArqLogEvolOBJ,  argv[4]);
 
 	/* Carrega o conteudo do arquivo de configuracao informado */
 	SaAbreArquivoConfiguracao(SaArqConfiguracao);
 
-	#if SA_GRAVA_VIZINHO
-			Arq_Vizinho = fopen(SaArqLogEvolOBJ, "w");
-			if (!Arq_Vizinho){
+	#if SA_GRAVA_OBJ
+			Arq_OBJ = fopen(SaArqLogEvolOBJ, "w");
+			if (!Arq_OBJ){
 				printf("\n================================================================================");
 				printf("\n[ERRO] arquivo '%s' não pode ser criado em main()\n\n", SaArqLogEvolOBJ);
 				printf("\n================================================================================\n");
@@ -1260,8 +1266,8 @@ u_int8_t main(u_int8_t argc, char **argv)
 	/* Libera estruturas de dados usadas nos computos */
 	SaLiberaMemoria();
 
-	#if SA_GRAVA_VIZINHO
-			fclose(Arq_Vizinho);
+	#if SA_GRAVA_OBJ
+			fclose(Arq_OBJ);
 	#endif
 
 	/* Informa ao sistema operacional que tudo ocorreu conforme previsto */
