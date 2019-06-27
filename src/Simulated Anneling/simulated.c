@@ -1201,8 +1201,8 @@ u_int8_t main(u_int8_t argc, char **argv)
 
 	/* Verifica a quantidade de argumentos informada */
 	if (SA_GRAVA_BEST && SA_GRAVA_OBJ){
-		if (argc != 6)
-			erro_args(3);
+			if (argc != 6)
+				erro_args(3);
 	}else if (SA_GRAVA_BEST){
 			if (argc != 5)
 				erro_args(2);

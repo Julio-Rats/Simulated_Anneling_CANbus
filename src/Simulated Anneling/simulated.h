@@ -56,8 +56,8 @@
 //(Julio)
 #define TIME_CAN_SIMULATED         120000  /* Tempo que o simulador ira emular*/
 #define PORC_START_DELAY           1       /* Maior porpoção escolhida para StartDelay*/
-#define ESCALAR_WCRT               1000    /* Escalar F()Objetiva para WCRT*/
-#define ESCALAR_QUEUE              1000    /* Escalar F()Objetiva para tempo max da fila*/
+#define ESCALAR_WCRT               10000   /* Escalar F()Objetiva para WCRT*/
+#define ESCALAR_QUEUE              10      /* Escalar F()Objetiva para tempo max da fila*/
 #define ESCALAR_DELAY              10      /* Escalar F()Objetiva para StartDelay*/
 //
 
@@ -65,8 +65,8 @@
 #define SA_VERBOSE                 FALSE
 #define SA_VERBOSE_PROB						 FALSE
 
-#define SA_GRAVA_BEST							 FALSE
-#define SA_GRAVA_OBJ               FALSE
+#define SA_GRAVA_BEST							 TRUE
+#define SA_GRAVA_OBJ               TRUE
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
 #define SA_TIMER                   0
