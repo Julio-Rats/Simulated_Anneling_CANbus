@@ -46,7 +46,7 @@ m 1763 1000 0
 m 1792 1000 0
 
 # Numero de vizinhos
-v 10
+v 50
 
 #Numero de iterções
 i 50
@@ -55,7 +55,7 @@ i 50
 r 3
 
 # Temperatura inicial do SA
-s 1000.0
+s 10000.0
 
 # Temperatura final do SA
 f 10.0
