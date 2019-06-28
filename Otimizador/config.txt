@@ -61,7 +61,7 @@ s 10000.0
 f 10.0
 
 # Fator de resfriamento Alpha do SA
-a 0.9
+a 0.99
 
 # Numero de perturbacoes na busca local em vizinhanca do SA
 p 1

@@ -32,7 +32,7 @@ do
 	echo
 	$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ $Path_BEST/$data-$ARQ_BEST
 	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ
-	#$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_BEST/$data-$ARQ_BEST
+	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_BEST/$data-$ARQ_BEST
 	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS
 	let CONTADOR=CONTADOR+1
 done
