@@ -883,7 +883,8 @@ double SaCalculaObjetiva(StSaSolucao* pSolucao){
 		if (pSolucao->WCRT)
 				objetiva = pSolucao->WCRT*ESCALAR_WCRT;
 		else
-				objetiva = -100000;
+				// objetiva = -100000;
+				objetiva = 0;
 		for(u_int16_t i = 0; i < SaNumMsgCan; i++)
 				objetiva += pSolucao->pSol[i].StartDelay*ESCALAR_DELAY;
 
