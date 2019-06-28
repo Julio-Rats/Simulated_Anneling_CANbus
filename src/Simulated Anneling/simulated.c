@@ -827,15 +827,15 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
  	struct tm* timeinfo;
 
 	/* Abre o arquivo de saida para informar os tempos propostos para a simulação no CANOe */
-	pArq = fopen(Nome, "r");
+	// pArq = fopen(Nome, "r");
 
 	/* Verificar se o arquivo foi aberto. Se sim, abre para append, caso contrario cria antes */
-	if(pArq == NULL)
+	// if(pArq == NULL)
 		 	/* Cria arquivo do zero */
 			pArq = fopen(Nome, "w+");
-	else
+	// else
 			/* Abre arquivo para 'append' */
-			pArq = fopen(Nome, "a");
+			// pArq = fopen(Nome, "a");
 
 	/* Verifica se o arquivo foi criado com sucesso */
 	if(pArq == NULL)
@@ -853,7 +853,7 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
   	timeinfo = localtime(&rawtime);
 
 	/* Cria o cabecalho do arquivo de saida final */
-	fprintf(pArq, "\n\nRESULTS @ %s\n", asctime(timeinfo));
+	fprintf(pArq, "RESULTS @ %s\n", asctime(timeinfo));
 	fprintf(pArq, "Função Objetiva \t%lf\n", SaCalculaObjetiva(pSolucao));
 	fprintf(pArq, "WCRT\t\t%lf\n", pSolucao->WCRT);
 	fprintf(pArq, "TIME BURST\t%lf\n\n", pSolucao->Time_Queue);
@@ -878,7 +878,10 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
 double SaCalculaObjetiva(StSaSolucao* pSolucao){
 		double objetiva;
 
-		objetiva = pSolucao->WCRT*ESCALAR_WCRT;
+		if (pSolucao->WCRT)
+				objetiva = pSolucao->WCRT*ESCALAR_WCRT;
+		else
+				objetiva = -100000;
 		for(u_int16_t i = 0; i < SaNumMsgCan; i++)
 				objetiva += pSolucao->pSol[i].StartDelay*ESCALAR_DELAY;
 
@@ -1063,6 +1066,9 @@ void SaSimulatedAnnealing(void)
 								/* Atualiza a melhor de todas as solucoes */
 								SaClonaSolucao(pSaMelhor, pSaVizinho);
 
+								/* Efetua o log da melhor solucao encontrada */
+								SaLogResultado(pSaMelhor, SaArqSaida);
+
 								#if SA_VERBOSE_PROB
 									printf("\n[INFO] Novo OVERALL encontrado: %lf\n", SaCalculaObjetiva(pSaMelhor));
 								#endif
@@ -1126,9 +1132,6 @@ void SaSimulatedAnnealing(void)
 		}
 
 	}while((Temperatura > SaTempFinal)&&(num_reaquecimento <= SaNumReaquecimento));
-
-	/* Efetua o log da melhor solucao encontrada */
-	SaLogResultado(pSaMelhor, SaArqSaida);
 
 	/* Substitui o arquivo DBC com o tempo da melhor solucao encontrada pelo SA */
 	SaGeraArquivoEntradaParaODBC(SaArqTempos, pSaMelhor);
