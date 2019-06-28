@@ -59,6 +59,7 @@
 #define ESCALAR_WCRT               100000  /* Escalar F()Objetiva para WCRT*/
 #define ESCALAR_QUEUE              10      /* Escalar F()Objetiva para tempo max da fila*/
 #define ESCALAR_DELAY              10      /* Escalar F()Objetiva para StartDelay*/
+#define LIMIT_DELAY                7
 //
 
 /* Habilita ou desabilita os modos verbose */
@@ -66,7 +67,8 @@
 #define SA_VERBOSE_PROB						 FALSE
 
 #define SA_GRAVA_BEST							 FALSE
-#define SA_GRAVA_OBJ               FALSE
+#define SA_GRAVA_OBJ               TRUE
+#define SET_LIMIT_DELAY            FALSE
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
 #define SA_TIMER                   0

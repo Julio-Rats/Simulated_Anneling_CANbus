@@ -747,13 +747,15 @@ void SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao)
 
 			/* CODIGO ABAIXO É A LIMITAÇÃO DE 7 MS PARA O DELAY */
 
-			// if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay <= 6)){
-			// 		double prob = ((double) rand() / RAND_MAX);
-			// 		if (prob <= 0.5)
-			// 				pSolucao->pSol[PosTroca].StartDelay = 7.0;
-			// 		else
-			// 				pSolucao->pSol[PosTroca].StartDelay = 0.0;
-			// }
+			#if SET_LIMIT_DELAY
+					if ((pSolucao->pSol[PosTroca].StartDelay > 0)&&(pSolucao->pSol[PosTroca].StartDelay < LIMIT_DELAY)){
+							double prob = ((double) rand() / RAND_MAX);
+							if (prob <= 0.5)
+									pSolucao->pSol[PosTroca].StartDelay = LIMIT_DELAY;
+							else
+									pSolucao->pSol[PosTroca].StartDelay = 0.0;
+					}
+			#endif
 			//
 	 }
 }

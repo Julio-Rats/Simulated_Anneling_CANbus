@@ -24,15 +24,15 @@ Path_LOGOBJ='LogOBJ'
 Path_BEST='LogBest'
 
 # Executa a aplicacao a quantidade de repeticoes especificada
-CONTADOR=0
-until [ $CONTADOR -ge $NUM_REPETICOES ];
-do
+# CONTADOR=0
+# until [ $CONTADOR -ge $NUM_REPETICOES ];
+# do
 	data=$(date +%s)
-	echo "Execucao No. $CONTADOR"
-	echo
-	$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ $Path_BEST/$data-$ARQ_BEST
-	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ
+	# echo "Execucao No. $CONTADOR"
+	# echo
+	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ $Path_BEST/$data-$ARQ_BEST
+	$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ
 	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_BEST/$data-$ARQ_BEST
 	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS
-	let CONTADOR=CONTADOR+1
-done
+	# let CONTADOR=CONTADOR+1
+# done

@@ -52,10 +52,10 @@ v 50
 i 50
 
 # Numero de reaquecimentos
-r 3
+r 0
 
 # Temperatura inicial do SA
-s 10000.0
+s 15000.0
 
 # Temperatura final do SA
 f 10.0
