@@ -1,5 +1,7 @@
 *.o
 *.gch
+*.png
+*.gif
 otimizador
 config.origin.txt
 .R*
