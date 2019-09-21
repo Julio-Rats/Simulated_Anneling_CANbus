@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[]) {
 
-  if (argc < 2 || argc > 3){
+  if (argc != 3){
 
         printf("\nSimulador CANbus 2.0A\n\n");
         printf("Utilize a sintaxe:\n\n\t%s <Arq> <Time>\n", argv[0]);
@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
 
     }
 
-  return main_simulated(argv[1], atof(argv[2]), 0, 0);
+  return main_simulated(argv[1], atof(argv[2]));
 
 }

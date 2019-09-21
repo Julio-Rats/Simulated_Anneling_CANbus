@@ -9,10 +9,10 @@
 ##########################################################################
 
 # Quantidade de repeticoes desejada
-NUM_REPETICOES=1
+# NUM_REPETICOES=1
 
 # Nome dos arquivos de entrada. Ajuste para customizar o script
-ARQ_CONFIG="config.txt"
+ARQ_CONFIG="config_atual.txt"
 ARQ_TMP_ODBC="Tempos.dat"
 ARQ_RESULTADOS="Result.dat"
 ARQ_LOGOBJ='LogOBJ.dat'
@@ -28,11 +28,9 @@ Path_BEST='LogBest'
 # until [ $CONTADOR -ge $NUM_REPETICOES ];
 # do
 	data=$(date +%s)
-	# echo "Execucao No. $CONTADOR"
+	# echo "Execucao No = $CONTADOR       Time Start = $data"
 	# echo
-	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ $Path_BEST/$data-$ARQ_BEST
-	$Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_LOGOBJ/$data-$ARQ_LOGOBJ
-	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS $Path_BEST/$data-$ARQ_BEST
-	# $Path_Bin/otimizador $ARQ_CONFIG $ARQ_TMP_ODBC $Path_Result/$data-$ARQ_RESULTADOS
+	# $Path_Bin/otimizador -c $ARQ_CONFIG -t $ARQ_TMP_ODBC -r $Path_Result/$data-$ARQ_RESULTADOS -g $Path_LOGOBJ/$data-$ARQ_LOGOBJ -b $Path_BEST/$data-$ARQ_BEST
+	$Path_Bin/otimizador -c $ARQ_CONFIG -d $1 -r $Path_Result/$data-$ARQ_RESULTADOS -g $Path_LOGOBJ/$data-$ARQ_LOGOBJ
 	# let CONTADOR=CONTADOR+1
 # done

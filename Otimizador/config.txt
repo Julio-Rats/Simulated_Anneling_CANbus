@@ -3,67 +3,22 @@
 #                   Arquivo de configuracao 01                  #
 #                                                               #
 #################################################################
-
-# Numero de mensagens consideradas: 05
-n 36
-
-# Lista de mensagens, no formato <ID> <CICLO MAXIMO (ms)> <STRING>, uma por linha
-m 129 10 0
-m 171 10 0
-m 200 10 0
-m 384 250 0
-m 409 200 0
-m 416 1000 0
-m 672 100 0
-m 705 50 0
-m 865 10 0
-m 896 250 0
-m 922 250 0
-m 928 500 0
-m 929 10 0
-m 960 250 0
-m 963 500 0
-m 984 1000 0
-m 992 500 0
-m 1056 10 0
-m 1349 1000 0
-m 1376 100 0
-m 1377 50 0
-m 1381 1000 0
-m 1387 100 0
-m 1409 50 0
-m 1440 100 0
-m 1441 50 0
-m 1539 1000 0
-m 1571 250 0
-m 1603 1000 0
-m 1635 1000 0
-m 1664 1000 0
-m 1667 1000 0
-m 1715 1000 0
-m 1728 250 0
-m 1763 1000 0
-m 1792 1000 0
-
-# Numero de vizinhos
-v 50
-
 #Numero de iterções
-i 50
+i 200
 
 # Numero de reaquecimentos
-r 0
+r 3
 
 # Temperatura inicial do SA
-s 15000.0
+s 5000.0
 
 # Temperatura final do SA
 f 10.0
 
 # Fator de resfriamento Alpha do SA
-a 0.99
+a 0.95
 
-# Numero de perturbacoes na busca local em vizinhanca do SA
+# Numero de perturbacoes na busca local e#mvizinhanca do SA
 p 1
 
 #Vizinho inicial z = zero, a = aleatoria
@@ -72,11 +27,11 @@ c z
 # Busca de vizinhança b x1 = busca, x2 = modo de pertubação, x1=['u','i'], x2=['r','i','c'], x1-u busca uniforme, x1-i busca proporcional ao ID, x2-r pert random
 # x2-i pert incremental, x2-c pert relacional ao delay atual.
 #b u r # uniforme random
-#b u i # uniforme incremetal
+b u i # uniforme incremetal
 #b u c # uniforme ciclo
 #b i r # id random
-b i i  # id incremetal
+#b i i  # id incremetal
 #b i c # id ciclo
 
-# Marcador de fim de arquivo de configuracao
+# Marcador de fi#mde arquivo de configuracao
 e

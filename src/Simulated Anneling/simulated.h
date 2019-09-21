@@ -54,23 +54,28 @@
 /*                                                                                       */
 /*****************************************************************************************/
 
-#define TIME_CAN_SIMULATED         120000  /* Tempo que o simulador ira emular*/
+// #define TIME_CAN_SIMULATED         120000  /* Tempo que o simulador ira emular*/
 #define PORC_START_DELAY           1       /* Maior porpoção escolhida para StartDelay*/
-#define ESCALAR_WCRT               100000  /* Escalar F()Objetiva para WCRT*/
-#define ESCALAR_QUEUE              10      /* Escalar F()Objetiva para tempo max da fila*/
-#define ESCALAR_DELAY              10      /* Escalar F()Objetiva para StartDelay*/
-#define LIMIT_DELAY                7       /* Tempo minimo para um StartDelay */
+#define ESCALAR_WCRT               1       /* Escalar F()Objetiva para WCRT*/
+#define ESCALAR_QUEUE              0       /* Escalar F()Objetiva para tempo max da fila*/
+#define ESCALAR_DELAY              0       /* Escalar F()Objetiva para StartDelay*/
 
+u_int8_t LIMIT_DELAY = 7;       /* Tempo minimo para um StartDelay */
 /* Habilita ou desabilita os modos verbose */
-#define SA_VERBOSE                 FALSE
-#define SA_VERBOSE_PROB						 FALSE
+bool SA_VERBOSE      = FALSE;
+bool SA_VERBOSE_PROB = FALSE;
+
+/* Habilita somente simulação*/
+bool SA_ONLY_SIM     = FALSE;
+
 
 /* Habilita escrita em arquivos de Logs */
-#define SA_GRAVA_BEST							 FALSE
-#define SA_GRAVA_OBJ               TRUE
+bool SA_GRAVA_BEST = FALSE;
+bool SA_GRAVA_OBJ  = FALSE;
+bool SA_GRAVA_WCRT = FALSE;
 
 /* Habilita limite minimo de StartDelay*/
-#define SET_LIMIT_DELAY            FALSE
+bool SET_LIMIT_DELAY = FALSE;
 
 /* Habilita ou desabilita o modo de gravação do vizinho */
 #define SA_TIMER                   0
@@ -119,7 +124,13 @@ char SaArqTempos[SA_MAX_CHAR_COMMAND_LINE];
 char SaArqSaida[SA_MAX_CHAR_COMMAND_LINE];
 char SaArqLogEvolOBJ[SA_MAX_CHAR_COMMAND_LINE];
 char SaArqBest[SA_MAX_CHAR_COMMAND_LINE];
+char SaSimFile[SA_MAX_CHAR_COMMAND_LINE];
+char SaCANDBFile[SA_MAX_CHAR_COMMAND_LINE];
+char SaWCRTFile[SA_MAX_CHAR_COMMAND_LINE];
 
+char path_file_best[SA_MAX_CHAR_COMMAND_LINE+5];
+char path_file_wcrt[SA_MAX_CHAR_COMMAND_LINE+5];
+char temp_time[SA_MAX_CHAR_COMMAND_LINE] = "/tmp/sa_time.txt";
 /* Armazenam parametros sobre cada mensagem */
 typedef struct
 {
@@ -134,23 +145,26 @@ typedef struct
 	u_int16_t Id:11;	     /* ID da mensagem   */
 	double    TamCiclo;    /* Tamanho do ciclo atual */
 	double    StartDelay;  /* Valor de offset inicial proposto */
+	double    deadline_time;  /* Valor do  tempo de deadline */
+	u_int8_t  payload;  /* Valor do  tempo de deadline */
 	double    ProbSelecao; /* Probabilidade de selecao da mensagem caso a perturbacao seja proporcional ao ID */
 }StSaMsgTmrSlot;
 
-/* Estrutura de dados de uma solucao */
 typedef struct
 {
 	double          WCRT;        /* Valor da busload associado com a temporizacao proposta */
-	double          Time_Queue;  /* Tempo maximo de fila dessa solução*/
-	double          Busload;     /* busload dessa solução*/
+	double          burst_time;  /* Tempo maximo de fila dessa solução*/
+	double          burst_size;     /* busload dessa solução*/
 	StSaMsgTmrSlot* pSol;        /* Vetor de slots com parametros propostos para solucao */
 }StSaSolucao;
 
+double TIME_CAN_SIMULATED = 120000;
+
 /* Array de parametros de mensagens */
-StSaMsgPar* pSaMsgParArray = NULL;
+StSaMsgTmrSlot* pSaMsgParArray 				 = NULL;
 
 /* Numero de mensagens consideradas pelo arquivo de configuracao */
-u_int16_t   SaNumMsgCan    = 0L;
+u_int16_t   SaNumMsgCan    				 = 0L;
 
 /* Solucoes usadas durante o processamento do Simulated Annealing */
 StSaSolucao* pSaMelhor             = NULL;
@@ -166,7 +180,7 @@ double       SaAlpha               = 0.95;
 u_int16_t    SaNumSlotsPerturbacao = 1L;
 
 //(Julio)
-u_int8_t     SaNumIteracao         = 1;
+u_int16_t    SaNumIteracao         = 1;
 u_int8_t     SaNumReaquecimento    = 0;
 u_int8_t     SaMetodoBusca         = SA_CNF_SELECAO_PROPORCIONAL_ID;
 u_int8_t     SaMetodoPert          = SA_CNF_PERT_INCRIMENT;
@@ -175,8 +189,10 @@ u_int8_t     SaMetodoInicial       = SA_CNF_START_ZERO;
 /*Descritores de arquvos, para os logs, modos verbose*/
 FILE*    	   Arq_OBJ                = NULL;
 FILE*    	   Arq_Best               = NULL;
+FILE*    	   Arq_WCRT               = NULL;
 
 static u_int32_t log_frame          = 1;
+u_int32_t        cont_wcrt          = 1;
 
 /* Controla posicoes sorteadas pelo SA */
 u_int8_t* pSaBitPosicao;
@@ -189,6 +205,8 @@ u_int8_t* pSaBitPosicao;
 void         SaLiberaMemoria(void);
 void         SaSimulatedAnnealing(void);
 void         SaDbgPrintParametros(void);
+void         get_candb(char* arch_name);
+void 				 print_wcrt(char* arch_name);
 void         SaAbreArquivoConfiguracao(char* Nome);
 void         SaGravaSolucaoBest(StSaSolucao* solucao);
 void         SaDesalocaSolucao(StSaSolucao *pSolucao);

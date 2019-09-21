@@ -13,23 +13,25 @@ void input_file(char* path){
     list_event = init_list();
     frame_t   frame;
     event_t   evento;
-		u_int16_t id;
+		double    id;
 		double    cycle_time;
 		double    delay_start_time;
+		double    deadline_time;
+		u_int8_t  payload;
 		rewind(arch);
 
-		while (fscanf(arch,"%hu\t%lf\t%lf\n", &id, &cycle_time, &delay_start_time) != EOF){
+		while (fscanf(arch,"%lf\t%lf\t%lf\t%lf\t%u\n", &id, &cycle_time, &deadline_time,&delay_start_time, &payload) != EOF){
           frame.id               = id;
           frame.cycle_time       = (double)(cycle_time);
           frame.delay_start_time = (double)(delay_start_time);
-          frame.payload          = PAYLOAD_FRAME+BITS_FRAMES;
+          frame.deadline_time    = deadline_time;
+          frame.payload          = (payload*8)+BITS_FRAMES;
           evento.frame           = frame;
 					evento.duration        = get_duration_frame(frame.payload);
           evento.time_current    = frame.delay_start_time;
           evento.time_happen     = frame.delay_start_time;
           add_list(evento);
 		}
-
 		fclose(arch);
 }
 
