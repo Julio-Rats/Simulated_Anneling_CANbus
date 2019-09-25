@@ -954,7 +954,7 @@ void SaLogResultado(StSaSolucao* pSolucao, char* Nome)
 	fprintf(pArq, "WCRT\t\t%lf\n", pSolucao->WCRT);
 	fprintf(pArq, "TIME BURST\t%lf\n", pSolucao->burst_time);
 	fprintf(pArq, "SIZE BURST\t%lf\n\n", pSolucao->burst_size);
-	fprintf(pArq, "ID_MSG\tCYCLE\t\tSTART_DLY\n");
+	fprintf(pArq, "ID_MSG\tCYCLE\tDEADLINE\tSTART_DLY\tPAYLOAD\n");
 
 	/* Para cada mensagem contida na solucao, informa os seus tempos */
 	for(i = 0; i< SaNumMsgCan; i++)
