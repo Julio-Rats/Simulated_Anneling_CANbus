@@ -100,12 +100,13 @@ void start_simulation(double time_end_simulation)
     }else{
        mean_length_queue = ((double)acumul_length_queue/number_of_queue);
        time_mean_queue   = ((double)acumul_time_queue/number_of_queue);
-       desvio = (acumul_length_queue_square/number_of_queue)-((acumul_length_queue/number_of_queue)*(acumul_length_queue/number_of_queue));
-       if (desvio < 0)
-       {
-           printf("errooo\n" );
-           exit(1);
-       }
+       desvio = (acumul_length_queue_square/number_of_queue)-(mean_length_queue*mean_length_queue);
+
+       // if (desvio < 0)
+       // {
+       //     desvio = 0;
+       // }
+
        avg_length_queue = mean_length_queue+5*desvio;
     }
 

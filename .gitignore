@@ -6,5 +6,7 @@ otimizador
 config.origin.txt
 .R*
 Tempos.dat
-LogBest/
-LogOBJ/
+Otimizador/LogBest/*
+Otimizador/LogOBJ/*
+Otimizador/Results/*
+Otimizador/wcrt_ids/*
