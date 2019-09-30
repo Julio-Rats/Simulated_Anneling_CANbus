@@ -46,7 +46,5 @@ do
 	#
 	$Path_Bin/otimizador -c $ARQ_CONFIG -d $1 -r $Path_Result/$1-$data-$ARQ_RESULTADOS \
 	 						-g $Path_LOGOBJ/$1-$data-$ARQ_LOGOBJ -w $Path_wcrt/$data/$1-$data-$ARQ_WCRT
-	let CONTADOR++
+	CONTADOR=$(($CONTADOR+1))
 done
-
-return 1
