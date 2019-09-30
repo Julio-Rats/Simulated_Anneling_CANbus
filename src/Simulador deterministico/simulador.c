@@ -23,10 +23,10 @@ void start_simulation(double time_end_simulation)
     number_of_queue             = 0;
     min_length_queue            = USHRT_MAX;
     max_length_queue            = 0;
-    avg_length_queue            = 0;
+    avg_length_queue            = 0L;
     wcrt                        = 0;
-    acumul_length_queue         = 0;
-    acumul_length_queue_square  = 0;
+    acumul_length_queue         = 0L;
+    acumul_length_queue_square  = 0L;
     msg_deadline                = 0;
     fifo_t* prioritary_frame     = NULL;
     time_current_simulation     = list_event->first->event.time_happen;
@@ -34,6 +34,7 @@ void start_simulation(double time_end_simulation)
     last_queue   = false;
     start_time_queue      = 0;
     current_length_queue  = 0;
+
     if (logframes)
         gravaLogFramesCab();
 
@@ -43,7 +44,8 @@ void start_simulation(double time_end_simulation)
 
           prioritary_frame = get_priority_frame();
           time_current_simulation = prioritary_frame->event.time_happen + prioritary_frame->event.duration;
-
+          if (time_current_simulation > time_end_simulation)
+              break;
           if (DEBUG)
           {
               system("clear");
@@ -98,14 +100,14 @@ void start_simulation(double time_end_simulation)
        min_length_queue  = 0;
        time_min_queue    = 0;
     }else{
-       mean_length_queue = ((double)acumul_length_queue/number_of_queue);
-       time_mean_queue   = ((double)acumul_time_queue/number_of_queue);
-       desvio = (acumul_length_queue_square/number_of_queue)-(mean_length_queue*mean_length_queue);
+       mean_length_queue = ((double)acumul_length_queue/(double)number_of_queue);
+       time_mean_queue   = ((double)acumul_time_queue/(double)number_of_queue);
+       desvio = (double)(acumul_length_queue_square/(double)number_of_queue)-(mean_length_queue*mean_length_queue);
 
-       // if (desvio < 0)
-       // {
-       //     desvio = 0;
-       // }
+       if (desvio < 0)
+       {
+           desvio = 0;
+       }
 
        avg_length_queue = mean_length_queue+5*desvio;
     }

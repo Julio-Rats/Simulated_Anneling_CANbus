@@ -25,7 +25,7 @@
 #include <math.h>
 #include <unistd.h>
 #include "timer.h"
-#include "../Driver/driver.h"
+#include "../Simulador deterministico/simulador.h"
 
 
 /*****************************************************************************************/
@@ -47,6 +47,7 @@
 #define TRUE                       1
 #define FALSE                      0
 
+#define PATH_SA           					"../Simulated Anneling/"
 /*****************************************************************************************/
 /*                                                                                       */
 /*  Configuracoes especiais de modulos que podem ser habilitados em tempo de compilacao  */
@@ -216,6 +217,7 @@ void         SaEstimaBusloadViaSimulacao(StSaSolucao* pSolucao);
 void         SaDbgExibeSolucao(StSaSolucao* pSolucao, char* pNome);
 void         SaClonaSolucao(StSaSolucao *pCopia, StSaSolucao *pBase);
 void         SaPerturbaSolucaoVizinhancaUniforme(StSaSolucao* pSolucao);
+void   			 start_can_simulated(char* path_arq, double time_simulation);
 void         SaGravaSolucaoCurrent(StSaSolucao* pSolucao, u_int32_t iterador);
 u_int8_t     getIndexOfPrimeLesserThan(u_int8_t value);
 u_int16_t    SaSelecionaSlotUniforme(StSaSolucao* pSolucao);

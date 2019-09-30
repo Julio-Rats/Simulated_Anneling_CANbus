@@ -7,6 +7,22 @@
 /*                                                                                       */
 /*****************************************************************************************/
 #include "simulated.h"
+
+void start_can_simulated(char* path_arq, double time_simulation)
+{
+      char* long_path = (char*)malloc(sizeof(char)*128);
+      if(!long_path){
+          printf("\n================================================================================");
+      		printf("\n[ERRO] Erro malloc() variavel '%s' falha ao tentar alocar %d bytes, função start_can_simulated()\n\n", "long_path", sizeof(char)*128);
+      		printf("\n================================================================================\n");
+      		exit(7);
+      }
+      strcpy(long_path,PATH_SA);
+      strcat(long_path, path_arq);
+
+      main_simulated(path_arq, time_simulation);
+}
+
 /*****************************************************************************************/
 /*                                                                                       */
 /* Carrega um arquivo de configuracao informado e armazena os parametros de cada msg CAN */
