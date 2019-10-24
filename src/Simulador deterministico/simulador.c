@@ -128,11 +128,20 @@ void start_simulation(double time_end_simulation)
         printf("Tempo medio de filas   \t %lf (ms)\n",   time_mean_queue);
         printf("Tempo max de fila      \t %lf (ms)\n\n", time_max_queue);
 
-        printf("Soma de todos os WRCT  \t %lf (ms)\n",   wcrt);
-        printf("Media do WCRT          \t %lf (ms)\n\n", mean_wcrt);
+        printf("Soma de todos os WRCT \t %lf (ms)\n",   wcrt);
+        printf("Media do WCRT         \t %lf (ms)\n\n", mean_wcrt);
 
-        printf("Busload                \t %lf (%)\n",    busload_simulated);
-        printf("Tempo de simulação     \t %lf (ms)\n\n", time_current_simulation);
+        printf("Busload               \t %lf (%)\n",    busload_simulated);
+        printf("Tempo de simulação    \t %lf (ms)\n\n", time_current_simulation);
+        printf("\n");
+
+        // for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
+        // {
+        //     if (aux->event.frame.number_queue != 0)
+        //         aux->event.frame.delay_mean /= (double)aux->event.frame.number_queue;
+        //
+        //     printf("ID: %d \t Delay Mean: %f   \t WCRT: %f\n", aux->event.frame.id, aux->event.frame.delay_mean, aux->event.frame.wcrt);
+        // }
     }
 }
 
@@ -231,7 +240,7 @@ void verific_queue()
 
 
         number_of_queue++;
-
+       printf("%d\n", current_length_queue);
         acumul_time_queue          += (time_current_simulation - start_time_queue);
 
         acumul_length_queue        += current_length_queue;
@@ -257,8 +266,16 @@ void verific_wcrt()
 {
 
     for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
-      if (aux->event.frame.wcrt < (aux->event.time_happen - aux->event.time_current))
-         aux->event.frame.wcrt = (aux->event.time_happen - aux->event.time_current);
+    {
+        if (aux->event.frame.wcrt < (aux->event.time_happen - aux->event.time_current))
+            aux->event.frame.wcrt = (aux->event.time_happen - aux->event.time_current);
+
+        if ((aux->event.time_happen - aux->event.time_current) > 0)
+        {
+            aux->event.frame.delay_mean += (aux->event.time_happen - aux->event.time_current);
+            aux->event.frame.number_queue++;
+        }
+    }
 }
 
 void get_wcrt()

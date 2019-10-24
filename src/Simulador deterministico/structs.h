@@ -24,7 +24,8 @@
 
 */
 
-typedef struct{
+typedef struct
+{
 
   u_int16_t id;
   double    cycle_time;
@@ -32,6 +33,8 @@ typedef struct{
   double    deadline_time;
   u_int8_t  payload;
   double    wcrt;
+  double    delay_mean;
+  u_int32_t number_queue;
 
 }frame_t;
 

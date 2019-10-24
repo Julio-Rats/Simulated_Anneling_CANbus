@@ -26,6 +26,9 @@ void input_file(char* path){
           frame.delay_start_time = (double)(delay_start_time);
           frame.deadline_time    = deadline_time;
           frame.payload          = (payload*8)+BITS_FRAMES;
+          frame.wcrt             = 0;
+          frame.delay_mean       = 0;
+          frame.number_queue     = 0;
           evento.frame           = frame;
 					evento.duration        = get_duration_frame(frame.payload);
           evento.time_current    = frame.delay_start_time;
