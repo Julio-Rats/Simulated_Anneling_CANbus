@@ -46,7 +46,7 @@ double     time_current_simulation;
 
 u_int32_t  frames_write;
 u_int16_t  msg_deadline;
-u_int16_t  number_of_queue;
+u_int32_t  number_of_queue;
 u_int16_t  min_length_queue;
 double     mean_length_queue;
 u_int16_t  max_length_queue;

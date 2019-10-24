@@ -30,10 +30,10 @@ void start_simulation(double time_end_simulation)
     msg_deadline                = 0;
     fifo_t* prioritary_frame     = NULL;
     time_current_simulation     = list_event->first->event.time_happen;
-    length_queue = false;
-    last_queue   = false;
-    start_time_queue      = 0;
-    current_length_queue  = 0;
+    length_queue                = false;
+    last_queue                  = false;
+    start_time_queue            = 0;
+    current_length_queue        = 0;
 
     if (logframes)
         gravaLogFramesCab();
@@ -51,10 +51,11 @@ void start_simulation(double time_end_simulation)
               system("clear");
               for(fifo_t* prioritary_frame=list_event->first;prioritary_frame;prioritary_frame=prioritary_frame->next_event)
               {
-                  printf("ID = %lu\t", prioritary_frame->event.frame.id);
-                  printf("cycle = %lf\t", prioritary_frame->event.frame.cycle_time);
-                  printf("Current_time = %lf\t", prioritary_frame->event.time_current);
-                  printf("Happen_time = %lf\n", prioritary_frame->event.time_happen);
+                    printf("ID = %lu\t", prioritary_frame->event.frame.id);
+                    printf("cycle = %lf\t", prioritary_frame->event.frame.cycle_time);
+                    printf("Current_time = %lf\t", prioritary_frame->event.time_current);
+                    printf("Happen_time = %lf\t", prioritary_frame->event.time_happen);
+                    printf("WCRT = %lf\n",  prioritary_frame->event.frame.wcrt);
               }
               printf("\nWRITE ID %d\tStart Time ", prioritary_frame->event.frame.id);
               printf("%lf\n\n", time_current_simulation);
@@ -72,7 +73,6 @@ void start_simulation(double time_end_simulation)
           verific_queue();
           verific_deadlines();
           verific_wcrt();
-
     } // while principal
 
     if (PRINT_FRAMES)
@@ -94,22 +94,20 @@ void start_simulation(double time_end_simulation)
 
     double desvio = 0;
 
-    if (number_of_queue == 0){
-       time_mean_queue   = 0;
-       mean_length_queue = 0;
-       min_length_queue  = 0;
-       time_min_queue    = 0;
-    }else{
-       mean_length_queue = ((double)acumul_length_queue/(double)number_of_queue);
-       time_mean_queue   = ((double)acumul_time_queue/(double)number_of_queue);
-       desvio = (double)(acumul_length_queue_square/(double)number_of_queue)-(mean_length_queue*mean_length_queue);
+    if (number_of_queue == 0)
+    {
+         time_mean_queue   = 0;
+         mean_length_queue = 0;
+         min_length_queue  = 0;
+         time_min_queue    = 0;
+    }
+    else
+    {
+         mean_length_queue = ((double)acumul_length_queue/(double)number_of_queue);
+         time_mean_queue   = ((double)acumul_time_queue/(double)number_of_queue);
+         desvio            = (double)(acumul_length_queue_square/(double)number_of_queue)-(mean_length_queue*mean_length_queue);
 
-       if (desvio < 0)
-       {
-           desvio = 0;
-       }
-
-       avg_length_queue = mean_length_queue+5*desvio;
+         avg_length_queue = mean_length_queue + (5*desvio);
     }
 
     if (RESULTS)
@@ -124,7 +122,7 @@ void start_simulation(double time_end_simulation)
         printf("Tamanho medio de filas \t %lf (Frames)\n",    mean_length_queue);
         printf("Tamanho max de fila    \t %d (Frames)\n",     max_length_queue);
         printf("Desvio tamanho de fila \t %lf (Frames)\n",    desvio);
-        printf("Tamanho medio e desvio \t %lf (Frames)\n\n", avg_length_queue);
+        printf("Media mais k desvios  \t %lf (Frames)\n\n", avg_length_queue);
 
         printf("Tempo min de fila      \t %lf (ms)\n",   time_min_queue);
         printf("Tempo medio de filas   \t %lf (ms)\n",   time_mean_queue);
@@ -141,7 +139,7 @@ void start_simulation(double time_end_simulation)
 void gravaLogFramesCab()
 {
     if (!Arq_Log_Best){
-        printf("\n================bool  PRINT_WCRT================================================================");
+        printf("\n================================================================================");
         printf("\n[ERRO] Arquivo '%s' falhou em abrir, função gravaLogFramesCab()\n\n", "LogFrames");
         printf("\n================================================================================\n");
         exit(ERROR_IO);
@@ -160,17 +158,14 @@ fifo_t* get_priority_frame()
 {
 
     fifo_t*    event_priority = list_event->first;
-    u_int16_t high_priority  = event_priority->event.frame.id;
 
     for(fifo_t* aux=list_event->first->next_event; aux; aux=aux->next_event)
     {
         if (aux->event.time_happen > event_priority->event.time_happen)
-            break;
-         if (aux->event.frame.id < high_priority)
-         {
-              high_priority  = aux->event.frame.id;
-              event_priority = aux;
-         }
+            break; // supondo que o vetor esteja sempre ordenado.
+         if (aux->event.frame.id < event_priority->event.frame.id)
+            event_priority = aux;
+
     }
     return event_priority;
 }
@@ -179,10 +174,10 @@ void add_time_lost_arbitrage()
 {
 
     for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
-      if (aux->event.time_happen < time_current_simulation)
-      {
-          aux->event.time_happen = time_current_simulation;
-      }else break;
+        if (aux->event.time_happen < time_current_simulation)
+            aux->event.time_happen = time_current_simulation;
+        else
+            break; // supondo que o vetor estaja sempre ordenado.
 }
 
 void realloc_event(fifo_t* event)
@@ -202,7 +197,7 @@ void realloc_event(fifo_t* event)
 
 void verific_queue()
 {
-
+    length_queue = false;
     for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
         if (aux->event.time_current != aux->event.time_happen)
         {
@@ -219,13 +214,14 @@ void verific_queue()
         }
 
         current_length_queue++;
-    }else if (last_queue)
+    }
+    else if (last_queue)
     {
-        if ((time_current_simulation-start_time_queue) > time_max_queue)
-            time_max_queue = time_current_simulation-start_time_queue;
+        if ((time_current_simulation - start_time_queue) > time_max_queue)
+            time_max_queue = time_current_simulation - start_time_queue;
 
-        if ((time_current_simulation-start_time_queue) < time_min_queue)
-            time_min_queue = time_current_simulation-start_time_queue;
+        if ((time_current_simulation - start_time_queue) < time_min_queue)
+            time_min_queue = time_current_simulation - start_time_queue;
 
         if (min_length_queue > current_length_queue)
             min_length_queue = current_length_queue;
@@ -233,24 +229,25 @@ void verific_queue()
         if (max_length_queue < current_length_queue)
             max_length_queue = current_length_queue;
 
+
         number_of_queue++;
-        acumul_time_queue          += (time_current_simulation-start_time_queue);
+
+        acumul_time_queue          += (time_current_simulation - start_time_queue);
 
         acumul_length_queue        += current_length_queue;
         acumul_length_queue_square += (current_length_queue*current_length_queue);
 
-        current_length_queue = 0;
-        last_queue           = false;
-        start_time_queue     = 0;
+        current_length_queue        = 0;
+        last_queue                  = false;
     }
-    length_queue = false;
 }
 
 void verific_deadlines()
 {
 
     for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
-       if (aux->event.time_happen >= (aux->event.frame.cycle_time+aux->event.time_current)) {
+       if (aux->event.time_happen >= (aux->event.frame.cycle_time+aux->event.time_current))
+       {
           msg_deadline++;
           realloc_event(aux);
        }
@@ -260,9 +257,8 @@ void verific_wcrt()
 {
 
     for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
-      if (aux->event.frame.wcrt < (aux->event.time_happen-aux->event.time_current))
-         aux->event.frame.wcrt = (aux->event.time_happen-aux->event.time_current);
-
+      if (aux->event.frame.wcrt < (aux->event.time_happen - aux->event.time_current))
+         aux->event.frame.wcrt = (aux->event.time_happen - aux->event.time_current);
 }
 
 void get_wcrt()
@@ -276,9 +272,9 @@ double get_mean_wcrt()
 {
     double count = 0;
 
-    for(fifo_t* aux=list_event->first; aux; aux=aux->next_event){
+    for(fifo_t* aux=list_event->first; aux; aux=aux->next_event)
         count++;
-    }
+
     return (double)(wcrt/count);
 }
 
@@ -289,5 +285,4 @@ void free_recurses()
        if (aux->prev_event)
           rem_list(aux->prev_event);
     rem_list(list_event->first);
-
 }
