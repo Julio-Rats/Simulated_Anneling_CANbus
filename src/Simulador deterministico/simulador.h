@@ -14,6 +14,8 @@ typedef u_int8_t bool;
 #define TRUE                  1
 #define true                  1
 
+#define K                     5
+
 /* Variavel de controle para debug passo a passo do simulador CANbus*/
 extern bool  DEBUG;
 /* Variavel de controle para habilitar saida no terminal das frames lidas do arquivo*/

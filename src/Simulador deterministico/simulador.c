@@ -107,7 +107,7 @@ void start_simulation(double time_end_simulation)
          time_mean_queue   = ((double)acumul_time_queue/(double)number_of_queue);
          desvio            = (double)(acumul_length_queue_square/(double)number_of_queue)-(mean_length_queue*mean_length_queue);
 
-         avg_length_queue = mean_length_queue + (5*desvio);
+         avg_length_queue = mean_length_queue + (K*desvio);
     }
 
     if (RESULTS)
@@ -240,7 +240,6 @@ void verific_queue()
 
 
         number_of_queue++;
-       printf("%d\n", current_length_queue);
         acumul_time_queue          += (time_current_simulation - start_time_queue);
 
         acumul_length_queue        += current_length_queue;
