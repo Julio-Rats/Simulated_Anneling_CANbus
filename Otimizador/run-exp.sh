@@ -2,9 +2,8 @@
 #                                                                        #
 # run-exp.sh                                                             #
 #                                                                        #
-# Executa o experimento do simulated annealing com o CANOe com a quanti- #
-# -dade de repeticoes especificadas. Observe que o arquivo de saida ira  #
-# ser concatenado a cada resultado, para inspecao final.                 #
+# Executa o experimento do simulated annealing com o Simulador com 			 #
+# 		quantidade de repeticoes especificadas. 												   #
 #                                                                        #
 ##########################################################################
 
@@ -21,15 +20,14 @@ fi
 NUM_REPETICOES=$2
 
 # Nome dos arquivos de entrada. Ajuste para customizar o script
-ARQ_CONFIG="config_atual.txt"
-ARQ_TMP_ODBC="Tempos.dat"
-ARQ_RESULTADOS="Result.dat"
+ARQ_CONFIG='config_parametros.txt'
+ARQ_RESULTADOS='result_parametros.dat'
 ARQ_LOGOBJ='LogOBJ.dat'
 ARQ_BEST='LogBEST'
 ARQ_WCRT='LogWCRT'
 
 Path_Bin='../Bin'
-Path_Result='Results'
+Path_Result='Results/resultados/sae_23'
 Path_LOGOBJ='LogOBJ'
 Path_BEST='LogBest'
 Path_wcrt='wcrt_ids'
@@ -42,9 +40,7 @@ do
 	echo -e "\nExecução Nº: $CONTADOR de $NUM_REPETICOES Execuções \t Time Start = $data"
 	echo
 
-	mkdir $Path_wcrt/$data/
-	#
-	$Path_Bin/otimizador -c $ARQ_CONFIG -d $1 -r $Path_Result/$1-$data-$ARQ_RESULTADOS \
-	 						-g $Path_LOGOBJ/$1-$data-$ARQ_LOGOBJ -w $Path_wcrt/$data/$1-$data-$ARQ_WCRT
+	$Path_Bin/otimizador -c $ARQ_CONFIG -d $1 -r $Path_Result/$1-$data-$ARQ_RESULTADOS
+
 	CONTADOR=$(($CONTADOR+1))
 done
