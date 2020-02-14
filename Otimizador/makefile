@@ -5,9 +5,10 @@ LIB    = -lm
 
 BINDIR = ../Bin
 SIMDIR = ../src/Simulador\ deterministico
-SMADIR = ../src/Simulated\ Anneling
+SMADIR = ../src/Simulated\ Annealing
+MAIDIR = ../src/Interface
 
-all: fifo.c get_candb.c simulador.c  simulated.c  timer.c
+all: fifo.c get_candb.c simulador.c  simulated.c  timer.c main.c
 	$(CC) -o $(BINDIR)/$(EXE) $(BINDIR)/*.o  $(CFLAGS) $(LIB)
 
 fifo.c:
@@ -25,5 +26,8 @@ simulated.c:
 timer.c:
 	gcc -c $(SMADIR)/$@ -o $(BINDIR)/timer.o $(CFLAGS)
 
+main.c:
+	gcc -c $(MAIDIR)/$@ -o $(BINDIR)/main.o $(CFLAGS)
+
 clean:
-	rm $(BINDIR)/*.o $(EXE)
+	rm $(BINDIR)/*.o

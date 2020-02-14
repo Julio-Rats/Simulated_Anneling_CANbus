@@ -1,16 +1,16 @@
 #################################################################
 #                                                               #
-#                   Arquivo de configuracao 01                  #
+#                   Arquivo de configuracão                     #
 #                                                               #
 #################################################################
-#Numero de iterções
-i 150
+#Numero de iterações ou vizinhos
+i 40
 
 # Numero de reaquecimentos
-r 3
+r 1
 
 # Temperatura inicial do SA
-s 8000.0
+s 4000.0
 
 # Temperatura final do SA
 f 10.0
@@ -24,14 +24,8 @@ p 1
 #Vizinho inicial z = zero, a = aleatoria
 c z
 
-# Busca de vizinhança b x1 = busca, x2 = modo de pertubação, x1=['u','i'], x2=['r','i','c'], x1-u busca uniforme, x1-i busca proporcional ao ID, x2-r pert random
-# x2-i pert incremental, x2-c pert relacional ao delay atual.
-#b u r # uniforme random
+# Busca de vizinhança e pertubação
 b u i # uniforme incremetal
-#b u c # uniforme ciclo
-#b i r # id random
-#b i i  # id incremetal
-#b i c # id ciclo
 
-# Marcador de fi#mde arquivo de configuracao
+# Marcador de fim de arquivo de configuracao
 e
